@@ -3,8 +3,7 @@
 :local iptorrent "192.168.241.182"
 :local porttorrent "7000"
 
-# Ensure masquerading exists
-
+# ensure masquerading exists
 :if ([/ip firewall nat print count-only where chain=srcnat action=masquerade out-interface-list="WAN" ipsec-policy="out,none"]=0) do {
     :log info message="creating masquerade rule"
     /ip firewall nat add chain=srcnat action=masquerade out-interface-list="WAN" ipsec-policy="out,none"
