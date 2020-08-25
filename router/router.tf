@@ -1,3 +1,10 @@
+# Configure the mikrotik Provider
+provider "mikrotik" {
+  host = var.router_host
+  username = var.router_user
+  password = var.router_pass
+}
+
 # import mikrotik Provider
 terraform {
   required_providers {
@@ -6,22 +13,3 @@ terraform {
     }
   }
 }
-
-# Configure the mikrotik Provider
-provider "mikrotik" {
-  host = var.router_host
-  username = var.router_user
-  password = var.router_pass
-}
-
-#resource "mikrotik_dhcp_lease" "file_server" {
-#  address = "192.168.88.1"
-#  macaddress = "11:22:33:44:55:66"
-#  comment = "file server"
-#}
-
-#resource "mikrotik_dns_record" "record" {
-#  name = "dns.heaven.za.net"
-#  address = "192.168.241.2"
-#  ttl = 300
-#}

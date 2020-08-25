@@ -47,3 +47,28 @@ resource "mikrotik_scheduler" "firewall-nat-schedule" {
   # Run every 60 mins
   interval = 3600
 }
+
+### Firewall filter
+resource "mikrotik_script" "firewall-filter-script" {
+  name = "firewall-filter"
+  owner = "admin"
+  policy = [
+    "ftp",
+    "reboot",
+    "read",
+    "write",
+    "policy",
+    "test",
+    "password",
+    "sniff",
+    "sensitive",
+  ]
+  source = file("${path.module}/firewall-filter.rsc")
+}
+
+resource "mikrotik_scheduler" "firewall-filter-schedule" {
+  name = "firewall-filter-schedule"
+  on_event = "firewall-filter"
+  # Run every 60 mins
+  interval = 3600
+}
