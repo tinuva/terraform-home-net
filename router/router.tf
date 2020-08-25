@@ -40,7 +40,7 @@ resource "mikrotik_script" "script" {
     "sniff",
     "sensitive",
   ]
-  source = file("${path.module}/script-test.txt")
+  source = file("${path.module}/script-test.rsc")
 }
 
 resource "mikrotik_scheduler" "scheduler" {
