@@ -72,3 +72,28 @@ resource "mikrotik_scheduler" "firewall-filter-schedule" {
   # Run every 60 mins
   interval = 3600
 }
+
+### DHCP Server settings
+resource "mikrotik_script" "dhcp-server-script" {
+  name = "dhcp-server"
+  owner = "admin"
+  policy = [
+    "ftp",
+    "reboot",
+    "read",
+    "write",
+    "policy",
+    "test",
+    "password",
+    "sniff",
+    "sensitive",
+  ]
+  source = file("${path.module}/firewall-filter.rsc")
+}
+
+#resource "mikrotik_scheduler" "dhcp-server-schedule" {
+#  name = "dhcp-server-schedule"
+#  on_event = "dhcp-server"
+#  # Run every 60 mins
+#  interval = 3600
+#}
