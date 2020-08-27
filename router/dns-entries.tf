@@ -3,5 +3,5 @@ resource "mikrotik_dns_record" "record" {
 
   name = "${each.key}.${var.domain}"
   address = each.value
-  ttl = 300
+  ttl = 900
 }

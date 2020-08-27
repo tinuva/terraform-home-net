@@ -88,12 +88,12 @@ resource "mikrotik_script" "dhcp-server-script" {
     "sniff",
     "sensitive",
   ]
-  source = file("${path.module}/firewall-filter.rsc")
+  source = file("${path.module}/dhcp-server.rsc")
 }
 
-#resource "mikrotik_scheduler" "dhcp-server-schedule" {
-#  name = "dhcp-server-schedule"
-#  on_event = "dhcp-server"
-#  # Run every 60 mins
-#  interval = 3600
-#}
+resource "mikrotik_scheduler" "dhcp-server-schedule" {
+  name = "dhcp-server-schedule"
+  on_event = "dhcp-server"
+  # Run every 60 mins
+  interval = 3600
+}
