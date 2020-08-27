@@ -1,9 +1,6 @@
-variable "router_host" { default = "192.168.88.1:8728" }
-variable "router_user" { default = "admin" }
-variable "router_pass" { default = "" }
-
-variable "domain" {}
-
+variable "api_key" { }
+variable "email" { }
+variable "zone_id" { }
 variable "records" {
     description = "Map dns to hosts"
     default = {
