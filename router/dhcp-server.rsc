@@ -1,7 +1,7 @@
 # set ip pool for dhcp server
-:if ([/ip pool print count-only where name="default-dhcp" ranges="192.168.241.101-192.168.241.254"]=0) do {
+:if ([/ip pool print count-only where name="default-dhcp" ranges="192.168.241.102-192.168.241.254"]=0) do {
     :log info message="setting dhcp pool"
-    /ip pool set [find name=default-dhcp] ranges=192.168.241.101-192.168.241.254
+    /ip pool set [find name=default-dhcp] ranges=192.168.241.102-192.168.241.254
 }
 
 # set dhcp-server network
@@ -14,5 +14,5 @@
 # set dhcp-server leasetime
 :if ([/ip dhcp-server print count-only where name=defconf lease-time=4w3d]=0) do {
     :log info message="setting dhcp server lease time"
-    /ip dhcp-server set 0  name=defconf lease-time=4w3d # 31 days
+    /ip dhcp-server set 0  name=defconf lease-time=4w3d
 }
