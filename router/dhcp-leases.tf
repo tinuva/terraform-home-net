@@ -35,7 +35,7 @@ resource "mikrotik_dhcp_lease" "envisalink" {
   address = "192.168.241.18" #240
   macaddress = "00:1C:2A:02:1F:06"
   comment = "envisalink-alarm-module"
-  hostname = "envisalink"
+  hostname = "EnvisaLink"
 }
 
 # IP Cameras
