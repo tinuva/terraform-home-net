@@ -97,3 +97,28 @@ resource "mikrotik_scheduler" "dhcp-server-schedule" {
   # Run every 60 mins
   interval = 3600
 }
+
+### If no internet ping release/renew dhcp client - Vumatel connectivity issue workaround
+resource "mikrotik_script" "check-internet-script" {
+  name = "check-internet"
+  owner = "admin"
+  policy = [
+    "ftp",
+    "reboot",
+    "read",
+    "write",
+    "policy",
+    "test",
+    "password",
+    "sniff",
+    "sensitive",
+  ]
+  source = file("${path.module}/check-internet.rsc")
+}
+
+resource "mikrotik_scheduler" "check-internet-schedule" {
+  name = "check-internet-schedule"
+  on_event = "check-internet"
+  # Run every 1 min
+  interval = 60
+}

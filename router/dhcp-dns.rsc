@@ -21,7 +21,7 @@
 :global shost000000000021 "tasmoadmin"
 :global shost000000000022 "traefik"
 :global shost000000000023 "nodered"
-#:global shost000000000024 "xxxxx"
+:global shost000000000024 "zha"
 #:global shost000000000025 "xxxxx"
 #:global shost000000000026 "xxxxx"
 #:global shost000000000027 "xxxxx"

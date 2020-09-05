@@ -37,6 +37,12 @@ resource "mikrotik_dhcp_lease" "envisalink" {
   comment = "envisalink-alarm-module"
   hostname = "EnvisaLink"
 }
+resource "mikrotik_dhcp_lease" "zigbeegateway" {
+  address = "192.168.241.19" 
+  macaddress = "A4:CF:12:D7:F7:FF"
+  comment = "sonoff-zigbee-gateway"
+  #hostname = ""
+}
 
 # IP Cameras
 resource "mikrotik_dhcp_lease" "camera_front" {
