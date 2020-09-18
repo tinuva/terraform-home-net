@@ -15,6 +15,12 @@
     :log info message="creating accept ICMP"
     /ip firewall firewall add action=accept chain=input comment="defconf: accept ICMP" protocol=icmp
 }
+# Check that this icmp rule is disabled
+:set chkenabled [/ip firewall filter print count-only where action=accept chain=input comment="defconf: accept ICMP" protocol="icmp" disabled]
+:if($chkenabled != true) do={
+# Rule is enabled
+    /ip firewall filter disable [/ip firewall filter find action=accept chain=input comment="defconf: accept ICMP" protocol="icmp"]
+}
 # defconf: accept to local loopback (for CAPsMAN)
 :if ([/ip firewall filter print count-only where action=accept chain=input comment="defconf: accept to local loopback (for CAPsMAN)" dst-address="127.0.0.1"]=0) do {
     :log info message="creating accept to local loopback (for CAPsMAN)"

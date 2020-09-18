@@ -7,6 +7,7 @@
 :log error "HOST $HOST is not responding to ping request, reseting dhcp-client 0..."
 /ip dhcp-client release 0
 /ip dhcp-client renew 0
-} else {
-:log warning "HOST $HOST ping is ok, no need to take any action ...";
-}
+} 
+#else {
+#:log warning "HOST $HOST ping is ok, no need to take any action ...";
+#}
