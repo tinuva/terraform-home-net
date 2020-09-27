@@ -39,7 +39,7 @@ resource "mikrotik_dhcp_lease" "envisalink" {
 }
 resource "mikrotik_dhcp_lease" "zigbeegateway" {
   address = "192.168.241.19" 
-  macaddress = "A4:CF:12:D7:F7:FF"
+  macaddress = "A4:CF:12:DC:0B:8C"
   comment = "sonoff-zigbee-gateway"
   #hostname = ""
 }
