@@ -65,12 +65,12 @@
 
 # custom rules here
 # drop laptop out
-:if ([/ip firewall filter print count-only where action=drop chain=forward comment="Block 1501 to 1600. Mon-Fri" src-mac-address="88:E9:FE:88:AB:FE"]=0) do {
+:if ([/ip firewall filter print count-only where action=drop chain=forward comment="Block 1501 to 1525. Mon-Fri" src-mac-address="88:E9:FE:88:AB:FE"]=0) do {
     :log info message="creating drop out for 88:E9:FE:88:AB:FE"
-    /ip firewall filter add place-before=1 action=drop chain=forward comment="Block 1501 to 1600. Mon-Fri" src-mac-address=88:E9:FE:88:AB:FE time=15h01m-16h,mon,tue,wed,thu,fri
+    /ip firewall filter add place-before=1 action=drop chain=forward comment="Block 1501 to 1525. Mon-Fri" src-mac-address=88:E9:FE:88:AB:FE time=15h25m-16h,mon,tue,wed,fri
 }
 # drop laptop in
-:if ([/ip firewall filter print count-only where action=drop chain=forward comment="Block 1501 to 1600. Mon-Fri" dst-address="192.168.241.42"]=0) do {
+:if ([/ip firewall filter print count-only where action=drop chain=forward comment="Block 1501 to 1525. Mon-Fri" dst-address="192.168.241.42"]=0) do {
     :log info message="creating drop in for 192.168.241.42"
-    /ip firewall filter add place-before=1 action=drop chain=forward comment="Block 1501 to 1600. Mon-Fri" dst-address=192.168.241.42 time=15h01m-16h,mon,tue,wed,thu,fri
+    /ip firewall filter add place-before=1 action=drop chain=forward comment="Block 1501 to 1525. Mon-Fri" dst-address=192.168.241.42 time=15h01m-15h25m,mon,tue,wed,fri
 }
