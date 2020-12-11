@@ -23,8 +23,8 @@
 :global shost000000000023 "nodered"
 :global shost000000000024 "zha"
 :global shost000000000025 "bastion"
-#:global shost000000000026 "xxxxx"
-#:global shost000000000027 "xxxxx"
+:global shost000000000026 "ebucks"
+:global shost000000000027 "nodejswatch"
 #:global shost000000000028 "xxxxx"
 #:global shost000000000029 "xxxxx"
 
