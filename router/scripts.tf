@@ -122,3 +122,28 @@ resource "mikrotik_scheduler" "check-internet-schedule" {
   # Run every 1 min
   interval = 60
 }
+
+### check upnp enabled script
+resource "mikrotik_script" "check-upnp-script" {
+  name = "check-upnp"
+  owner = "admin"
+  policy = [
+    "ftp",
+    "reboot",
+    "read",
+    "write",
+    "policy",
+    "test",
+    "password",
+    "sniff",
+    "sensitive",
+  ]
+  source = file("${path.module}/check-upnp.rsc")
+}
+
+resource "mikrotik_scheduler" "check-upnp-schedule" {
+  name = "check-upnp-schedule"
+  on_event = "check-upnp"
+  # Run every 1 min
+  interval = 60
+}
