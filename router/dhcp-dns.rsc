@@ -25,7 +25,7 @@
 :global shost000000000025 "bastion"
 :global shost000000000026 "ebucks"
 :global shost000000000027 "nodejswatch"
-#:global shost000000000028 "xxxxx"
+:global shost000000000028 "spotweb"
 #:global shost000000000029 "xxxxx"
 
 :local zone "heaven.za.net";
