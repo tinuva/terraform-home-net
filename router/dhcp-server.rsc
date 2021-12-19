@@ -5,10 +5,10 @@
 }
 
 # set dhcp-server network
-:if ([/ip dhcp-server network print count-only where address="192.168.241.0/24" gateway=192.168.241.1 dns-server=192.168.241.2 ntp-server=162.159.200.1]=0) do {
+:if ([/ip dhcp-server network print count-only where address="192.168.241.0/24" gateway=192.168.241.1 dns-server=192.168.241.1 ntp-server=162.159.200.1]=0) do {
     :log info message="setting dhcp network"
-    #/ip dhcp-server network set [find address="192.168.88.1/24"] address=192.168.241.0/24 gateway=192.168.241.1 dns-server=192.168.241.2
-    /ip dhcp-server network set 0 address=192.168.241.0/24 gateway=192.168.241.1 dns-server=192.168.241.2 ntp-server=162.159.200.1
+    #/ip dhcp-server network set [find address="192.168.88.1/24"] address=192.168.241.0/24 gateway=192.168.241.1 dns-server=192.168.241.1
+    /ip dhcp-server network set 0 address=192.168.241.0/24 gateway=192.168.241.1 dns-server=192.168.241.1 ntp-server=162.159.200.1
 }
 
 # set dhcp-server leasetime

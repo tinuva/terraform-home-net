@@ -26,7 +26,11 @@
 :global shost000000000026 "ebucks"
 :global shost000000000027 "nodejswatch"
 :global shost000000000028 "spotweb"
-#:global shost000000000029 "xxxxx"
+:global shost000000000029 "tasmobackup"
+:global shost000000000030 "overseerr"
+:global shost000000000031 "kibana"
+:global shost000000000032 "bi"
+:global shost000000000033 "pve"
 
 :local zone "heaven.za.net";
 :local ttl "00:15:00"

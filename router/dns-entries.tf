@@ -8,6 +8,6 @@ resource "mikrotik_dns_record" "record" {
 
 resource "mikrotik_dns_record" "bastion" {
   name = "bastion.${var.domain}"
-  address = "192.168.241.11"
+  address = "192.168.241.12"
   ttl = 900
 }
