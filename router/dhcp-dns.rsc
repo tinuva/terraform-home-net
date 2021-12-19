@@ -30,7 +30,7 @@
 :global shost000000000030 "overseerr"
 :global shost000000000031 "kibana"
 :global shost000000000032 "bi"
-:global shost000000000033 "pve"
+:global shost000000000033 "pve-nuc"
 
 :local zone "heaven.za.net";
 :local ttl "00:15:00"
