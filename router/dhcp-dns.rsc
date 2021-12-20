@@ -31,6 +31,8 @@
 :global shost000000000031 "kibana"
 :global shost000000000032 "bi"
 :global shost000000000033 "pve-nuc"
+:global shost000000000034 "stax"
+:global shost000000000035 "home-assistant"
 
 :local zone "heaven.za.net";
 :local ttl "00:15:00"
