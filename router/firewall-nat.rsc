@@ -1,5 +1,5 @@
-:local ipssh "192.168.241.12"
-:local ipweb "192.168.241.12"
+:local ipssh "192.168.241.13"
+:local ipweb "192.168.241.13"
 :local iptorrent "192.168.241.10"
 :local porttorrent "7000"
 
