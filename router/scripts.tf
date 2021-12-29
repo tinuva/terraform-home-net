@@ -144,6 +144,56 @@ resource "mikrotik_script" "check-upnp-script" {
 resource "mikrotik_scheduler" "check-upnp-schedule" {
   name = "check-upnp-schedule"
   on_event = "check-upnp"
-  # Run every 1 min
-  interval = 60
+  # Run every 60 mins
+  interval = 3600
+}
+
+
+### check upnp enabled script
+resource "mikrotik_script" "vrrp-script" {
+  name = "check-vrrp"
+  owner = "admin"
+  policy = [
+    "ftp",
+    "reboot",
+    "read",
+    "write",
+    "policy",
+    "test",
+    "password",
+    "sniff",
+    "sensitive",
+  ]
+  source = file("${path.module}/check-vrrp.rsc")
+}
+
+resource "mikrotik_scheduler" "vrrp-schedule" {
+  name = "vrrp-schedule"
+  on_event = "check-vrrp"
+  # Run every 60 mins
+  interval = 3600
+}
+
+### CloudFlare ip list update scripts
+resource "mikrotik_script" "fw-ip-list-update-cloudflare-script" {
+  name = "fw-ip-list-update-cloudflare"
+  owner = "admin"
+  policy = [
+    "ftp",
+    "reboot",
+    "read",
+    "write",
+    "policy",
+    "test",
+    "password",
+    "sniff",
+    "sensitive",
+  ]
+  source = file("${path.module}/fw-ip-list-update-cloudflare.rsc")
+}
+resource "mikrotik_scheduler" "fw-ip-list-update-cloudflare-schedule" {
+  name = "fw-ip-list-update-cloudflare"
+  on_event = "fw-ip-list-update-cloudflare"
+  # Run every almost 24h
+  interval = 86399
 }

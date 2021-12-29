@@ -1,14 +1,22 @@
 # set ip pool for dhcp server
-:if ([/ip pool print count-only where name="default-dhcp" ranges="192.168.241.102-192.168.241.254"]=0) do {
+:if ([/ip pool print count-only where name="default-dhcp" ranges="10.0.0.102-10.0.0.254"]=0) do {
     :log info message="setting dhcp pool"
-    /ip pool set [find name=default-dhcp] ranges=192.168.241.102-192.168.241.254
+    /ip pool set [find name=default-dhcp] ranges=10.0.0.102-10.0.0.254
 }
 
-# set dhcp-server network
-:if ([/ip dhcp-server network print count-only where address="192.168.241.0/24" gateway=192.168.241.1 dns-server=192.168.241.1 ntp-server=162.159.200.1]=0) do {
+:if ([/ip pool print count-only where name="pool10-1" ranges="10.0.1.41-10.0.1.254"]=0) do {
+    :log info message="setting dhcp pool pool10-1"
+    /ip pool add name=pool10-1 ranges=10.0.1.41-10.0.1.254    
+}
+
+# set dhcp-server network if not exist
+:if ([/ip dhcp-server network print count-only]=0) do {
+    /ip dhcp-server network add address=10.0.0.0/23 gateway=10.0.0.1 dns-server=10.0.0.2 ntp-server=162.159.200.1 netmask=23
+}
+# set dhcp-server network if exist
+:if ([/ip dhcp-server network print count-only where address="10.0.0.0/23" gateway=10.0.0.1 dns-server=10.0.0.2 ntp-server=162.159.200.1 netmask=23]=0) do {
     :log info message="setting dhcp network"
-    #/ip dhcp-server network set [find address="192.168.88.1/24"] address=192.168.241.0/24 gateway=192.168.241.1 dns-server=192.168.241.1
-    /ip dhcp-server network set 0 address=192.168.241.0/24 gateway=192.168.241.1 dns-server=192.168.241.1 ntp-server=162.159.200.1
+    /ip dhcp-server network set 0 address=10.0.0.0/23 gateway=10.0.0.1 dns-server=10.0.0.2 ntp-server=162.159.200.1 netmask=23
 }
 
 # set dhcp-server leasetime
