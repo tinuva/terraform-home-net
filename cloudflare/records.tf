@@ -15,3 +15,11 @@ resource "cloudflare_record" "bastion" {
   type    = "CNAME"
   proxied = false
 }
+
+resource "cloudflare_record" "teamspeak3" {
+  zone_id  = var.zone_id
+  name    = "teamspeak3"
+  value   = "41.185.26.102"
+  type    = "A"
+  proxied = false
+}

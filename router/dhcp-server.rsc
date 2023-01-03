@@ -11,12 +11,12 @@
 
 # set dhcp-server network if not exist
 :if ([/ip dhcp-server network print count-only]=0) do {
-    /ip dhcp-server network add address=10.0.0.0/23 gateway=10.0.0.1 dns-server=10.0.0.2 ntp-server=162.159.200.1 netmask=23
+    /ip dhcp-server network add address=10.0.0.0/23 gateway=10.0.0.1 dns-server=10.0.0.2 ntp-server=10.0.0.1 netmask=23
 }
 # set dhcp-server network if exist
-:if ([/ip dhcp-server network print count-only where address="10.0.0.0/23" gateway=10.0.0.1 dns-server=10.0.0.2 ntp-server=162.159.200.1 netmask=23]=0) do {
+:if ([/ip dhcp-server network print count-only where address="10.0.0.0/23" gateway=10.0.0.1 dns-server=10.0.0.2 ntp-server=10.0.0.1 netmask=23]=0) do {
     :log info message="setting dhcp network"
-    /ip dhcp-server network set 0 address=10.0.0.0/23 gateway=10.0.0.1 dns-server=10.0.0.2 ntp-server=162.159.200.1 netmask=23
+    /ip dhcp-server network set 0 address=10.0.0.0/23 gateway=10.0.0.1 dns-server=10.0.0.2 ntp-server=10.0.0.1 netmask=23
 }
 
 # set dhcp-server leasetime

@@ -2,10 +2,12 @@ module "router" {
   source          = "./router"
   
   router_host = var.router_host
+  router_hosturl = var.router_hosturl
   router_user = var.router_user
   router_pass = var.router_pass
   records = var.records
   domain = var.domain
+  records_local_only = var.records_local_only
 }
 
 module "cloudflare" {

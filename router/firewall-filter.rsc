@@ -1,3 +1,9 @@
+:local ipicmp1 "66.220.2.74/32"
+
+# icmp allow list
+:if ([/ip firewall address-list print count-only where list="icmp-allowed"]=0) do {
+    /ip firewall address-list add address=$ipicmp1 list=icmp-allowed
+}
 
 # default firewall rules, lets keep them in place
 # defconf: accept established,related,untracked
@@ -15,11 +21,16 @@
     :log info message="creating accept ICMP"
     /ip firewall filter add action=accept chain=input comment="defconf: accept ICMP" protocol=icmp
 }
-# Check that this icmp rule is disabled
-:if ([/ip firewall filter print count-only where action=accept chain=input comment="defconf: accept ICMP" protocol="icmp" disabled]=0) do={
+:if ([/ip firewall filter print count-only where action=accept chain=input comment="defconf: accept ICMP" protocol="icmp" src-address-list="icmp-allowed"]=0) do {
+    :log info message="update accept ICMP"
+    /ip firewall filter set src-address-list="icmp-allowed" [/ip firewall filter find action=accept chain=input comment="defconf: accept ICMP" protocol="icmp"]
+}
+
+# Check that this icmp rule is enabled
+:if ([/ip firewall filter print count-only where action=accept chain=input comment="defconf: accept ICMP" protocol="icmp" disabled]=1) do={
     # Rule is enabled
-    :log info message="disabling accept ICMP rule"
-    /ip firewall filter disable [/ip firewall filter find action=accept chain=input comment="defconf: accept ICMP" protocol="icmp"]
+    :log info message="enabling accept ICMP rule"
+    /ip firewall filter enable [/ip firewall filter find action=accept chain=input comment="defconf: accept ICMP" protocol="icmp"]
 }
 # defconf: accept to local loopback (for CAPsMAN)
 :if ([/ip firewall filter print count-only where action=accept chain=input comment="defconf: accept to local loopback (for CAPsMAN)" dst-address="127.0.0.1"]=0) do {
@@ -62,3 +73,4 @@
     /ip firewall filter add action=drop chain=forward comment="defconf: drop all from WAN not DSTNATed" connection-nat-state=!dstnat connection-state=new in-interface-list=WAN
 }
 # default firewall rules end
+

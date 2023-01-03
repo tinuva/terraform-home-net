@@ -1,7 +1,7 @@
 :local ipssh "10.0.0.13"
 :local ipweb "10.0.0.13"
-:local iptorrent "10.0.0.10"
-:local porttorrent "7000"
+:local iptorrent "10.0.0.162"
+:local porttorrent "51413"
 
 # ensure masquerading exists
 :if ([/ip firewall nat print count-only where chain=srcnat action=masquerade out-interface-list="WAN" ipsec-policy="out,none"]=0) do {
@@ -12,6 +12,7 @@
 # port 22 ssh allow list
 :if ([/ip firewall address-list print count-only where list="ssh-allowed"]=0) do {
     /ip firewall address-list add address=54.240.197.224/28 list=ssh-allowed
+    /ip firewall address-list add address=99.78.144.128/25 list=ssh-allowed
 }
 
 # port 22 ssh
@@ -42,7 +43,7 @@
     /ip firewall nat add chain=dstnat action=dst-nat to-addresses=$ipweb protocol=tcp in-interface-list=WAN dst-port=443 src-address-list=CloudFlare
 }
 
-# port 7000 torrent
+# port torrent
 :if ([/ip firewall nat print count-only where chain=dstnat && action=dst-nat && to-addresses=$iptorrent && protocol="tcp" && in-interface-list="WAN" && dst-port="$porttorrent"]=0) do {
     :if ([/ip firewall nat print count-only where chain=dstnat && action=dst-nat && protocol="tcp" && in-interface-list="WAN" && dst-port="$porttorrent"]!=0) do {
         :foreach rule in=[/ip firewall nat find chain=dstnat && action=dst-nat && protocol="tcp" && in-interface-list="WAN" && dst-port="$porttorrent"] do={
@@ -50,4 +51,12 @@
     }
     :log info message="creating port $porttorrent forward to $iptorrent"
     /ip firewall nat add chain=dstnat action=dst-nat to-addresses=$iptorrent protocol=tcp in-interface-list=WAN dst-port=$porttorrent
+}
+:if ([/ip firewall nat print count-only where chain=dstnat && action=dst-nat && to-addresses=$iptorrent && protocol="udp" && in-interface-list="WAN" && dst-port="$porttorrent"]=0) do {
+    :if ([/ip firewall nat print count-only where chain=dstnat && action=dst-nat && protocol="udp" && in-interface-list="WAN" && dst-port="$porttorrent"]!=0) do {
+        :foreach rule in=[/ip firewall nat find chain=dstnat && action=dst-nat && protocol="udp" && in-interface-list="WAN" && dst-port="$porttorrent"] do={
+            /ip firewall nat remove $rule}
+    }
+    :log info message="creating port $porttorrent forward to $iptorrent"
+    /ip firewall nat add chain=dstnat action=dst-nat to-addresses=$iptorrent protocol=udp in-interface-list=WAN dst-port=$porttorrent
 }

@@ -1,9 +1,9 @@
 # enable vrrp interface
 :if ([/interface vrrp print count-only]=0) do {
-    /interface vrrp add authentication=simple interface=ether2 name=vrrp1 version=2 vrid=2 password=pihole77
+    /interface vrrp add authentication=simple interface=bridge1 name=vrrp1 version=2 vrid=2 password=pihole77
 }
-:if ([/interface vrrp print count-only where authentication=simple interface=ether2 name=vrrp1 version=2 vrid=2 password=pihole77]=0) do {
-    /interface vrrp set vrrp1 authentication=simple interface=ether2 name=vrrp1 version=2 vrid=2 password=pihole77
+:if ([/interface vrrp print count-only where authentication=simple interface=bridge1 name=vrrp1 version=2 vrid=2 password=pihole77]=0) do {
+    /interface vrrp set vrrp1 authentication=simple interface=bridge1 name=vrrp1 version=2 vrid=2 password=pihole77
 }
 
 # ensure vrrp is on LAN list

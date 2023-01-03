@@ -6,8 +6,16 @@ resource "mikrotik_dns_record" "record" {
   ttl = 900
 }
 
+resource "mikrotik_dns_record" "record_local_only" {
+  for_each = var.records_local_only
+
+  name = "${each.key}.${var.domain}"
+  address = each.value
+  ttl = 900
+}
+
 resource "mikrotik_dns_record" "bastion" {
   name = "bastion.${var.domain}"
-  address = "10.0.0.13"
+  address = "10.0.3.13"
   ttl = 900
 }

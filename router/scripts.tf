@@ -149,7 +149,7 @@ resource "mikrotik_scheduler" "check-upnp-schedule" {
 }
 
 
-### check upnp enabled script
+### check vrrp enabled script
 resource "mikrotik_script" "vrrp-script" {
   name = "check-vrrp"
   owner = "admin"
@@ -196,4 +196,40 @@ resource "mikrotik_scheduler" "fw-ip-list-update-cloudflare-schedule" {
   on_event = "fw-ip-list-update-cloudflare"
   # Run every almost 24h
   interval = 86399
+}
+
+# he.net ipv6 script
+resource "mikrotik_script" "check-he-ipv6-script" {
+  name = "check-he-ipv6"
+  owner = "admin"
+  policy = [
+    "ftp",
+    "reboot",
+    "read",
+    "write",
+    "policy",
+    "test",
+    "password",
+    "sniff",
+    "sensitive",
+  ]
+  source = file("${path.module}/he-ipv6.rsc")
+}
+
+### Firewall filter v6
+resource "mikrotik_script" "firewall-filter-v6-script" {
+  name = "firewall-filter-v6"
+  owner = "admin"
+  policy = [
+    "ftp",
+    "reboot",
+    "read",
+    "write",
+    "policy",
+    "test",
+    "password",
+    "sniff",
+    "sensitive",
+  ]
+  source = file("${path.module}/firewall-filter-v6.rsc")
 }
