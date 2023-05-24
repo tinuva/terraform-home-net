@@ -86,7 +86,7 @@
     /ip dhcp-server lease;
     :set dhcpnode [ find where host-name=$hostname ];
     :if ( [ :len $dhcpnode ] > 0) do={
-    :log debug ("Lease for ".$hostname." still exists. Not deleting.");
+    # :log debug ("Lease for ".$hostname." still exists. Not deleting.");
     } else={
 # there's no lease by that name. Maybe this mac has a static name.
     :local found false
@@ -97,9 +97,9 @@
         }
     }
     :if ( found ) do={
-        :log debug ("Hostname ".$hostname." is static");
+        # :log debug ("Hostname ".$hostname." is static");
     } else={
-        :log debug ("Lease expired for ".$hostname.", deleting DNS entry.");
+        # :log debug ("Lease expired for ".$hostname.", deleting DNS entry.");
         /ip dns static remove $i;
     }
     }
@@ -129,15 +129,15 @@
 # it exists. Is its IP the same?
         :set dnsip [ get $dnsnode address ];
         :if ( $dnsip = $dhcpip ) do={
-        :log debug ("DNS entry for " . $hostname . " does not need updating.");
+        # :log debug ("DNS entry for " . $hostname . " does not need updating.");
         } else={
-        :log debug ("Replacing DNS entry for " . $hostname);
+        # :log debug ("Replacing DNS entry for " . $hostname);
         /ip dns static remove $dnsnode;
         /ip dns static add name=$hostname address=$dhcpip ttl=$ttl;
         }
     } else={
 # it doesn't exist. Add it
-        :log debug ("Adding new DNS entry for " . $hostname);
+        # :log debug ("Adding new DNS entry for " . $hostname);
         /ip dns static add name=$hostname address=$dhcpip ttl=$ttl;
     }
     }
