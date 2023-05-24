@@ -1,6 +1,6 @@
-:local ipssh "10.0.0.13"
-:local ipweb "10.0.0.13"
-:local iptorrent "10.0.0.162"
+:local ipssh "10.0.3.13"
+:local ipweb "10.0.3.13"
+:local iptorrent "10.0.3.20"
 :local porttorrent "51413"
 
 # ensure masquerading exists

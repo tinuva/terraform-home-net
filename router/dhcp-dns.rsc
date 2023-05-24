@@ -56,6 +56,20 @@
 :global shost000000000055 "overseerr2"
 :global shost000000000056 "zigbee2mqtt"
 
+:global shost000000000057 "diskstation"
+:global shost000000000058 "home-assistant"
+
+:global shost000000000059 "envisalink"
+
+:global shost000000000060 "router-vlan1"
+:global shost000000000061 "router-vlan20"
+:global shost000000000062 "router-vlan21"
+:global shost000000000063 "router-vlan22"
+:global shost000000000064 "router-vlan23"
+:global shost000000000065 "router-vlan24"
+
+:global shost000000000066 "mktxp-grafana"
+
 :local zone "heaven.za.net";
 :local ttl "00:15:00"
 :local hostname
@@ -85,7 +99,7 @@
     :if ( found ) do={
         :log debug ("Hostname ".$hostname." is static");
     } else={
-        :log info ("Lease expired for ".$hostname.", deleting DNS entry.");
+        :log debug ("Lease expired for ".$hostname.", deleting DNS entry.");
         /ip dns static remove $i;
     }
     }
@@ -117,13 +131,13 @@
         :if ( $dnsip = $dhcpip ) do={
         :log debug ("DNS entry for " . $hostname . " does not need updating.");
         } else={
-        :log info ("Replacing DNS entry for " . $hostname);
+        :log debug ("Replacing DNS entry for " . $hostname);
         /ip dns static remove $dnsnode;
         /ip dns static add name=$hostname address=$dhcpip ttl=$ttl;
         }
     } else={
 # it doesn't exist. Add it
-        :log info ("Adding new DNS entry for " . $hostname);
+        :log debug ("Adding new DNS entry for " . $hostname);
         /ip dns static add name=$hostname address=$dhcpip ttl=$ttl;
     }
     }
