@@ -13,7 +13,7 @@ resource "mikrotik_script" "dhcp-to-dns-script" {
     "sniff",
     "sensitive",
   ]
-  source = file("${path.module}/dhcp-dns.rsc")
+  source = file("${path.module}/scripts/dhcp-dns.rsc")
 }
 
 resource "mikrotik_scheduler" "dhcp-dns-schedule" {
@@ -38,7 +38,7 @@ resource "mikrotik_script" "firewall-nat-script" {
     "sniff",
     "sensitive",
   ]
-  source = file("${path.module}/firewall-nat.rsc")
+  source = file("${path.module}/scripts/firewall-nat.rsc")
 }
 
 resource "mikrotik_scheduler" "firewall-nat-schedule" {
@@ -63,7 +63,7 @@ resource "mikrotik_script" "firewall-filter-script" {
     "sniff",
     "sensitive",
   ]
-  source = file("${path.module}/firewall-filter.rsc")
+  source = file("${path.module}/scripts/firewall-filter.rsc")
 }
 
 resource "mikrotik_scheduler" "firewall-filter-schedule" {
@@ -88,7 +88,7 @@ resource "mikrotik_script" "dhcp-server-script" {
     "sniff",
     "sensitive",
   ]
-  source = file("${path.module}/dhcp-server.rsc")
+  source = file("${path.module}/scripts/dhcp-server.rsc")
 }
 
 resource "mikrotik_scheduler" "dhcp-server-schedule" {
@@ -113,7 +113,7 @@ resource "mikrotik_script" "check-internet-script" {
     "sniff",
     "sensitive",
   ]
-  source = file("${path.module}/check-internet.rsc")
+  source = file("${path.module}/scripts/check-internet.rsc")
 }
 
 resource "mikrotik_scheduler" "check-internet-schedule" {
@@ -138,7 +138,7 @@ resource "mikrotik_script" "check-upnp-script" {
     "sniff",
     "sensitive",
   ]
-  source = file("${path.module}/check-upnp.rsc")
+  source = file("${path.module}/scripts/check-upnp.rsc")
 }
 
 resource "mikrotik_scheduler" "check-upnp-schedule" {
@@ -164,7 +164,7 @@ resource "mikrotik_script" "vrrp-script" {
     "sniff",
     "sensitive",
   ]
-  source = file("${path.module}/check-vrrp.rsc")
+  source = file("${path.module}/scripts/check-vrrp.rsc")
 }
 
 resource "mikrotik_scheduler" "vrrp-schedule" {
@@ -189,7 +189,7 @@ resource "mikrotik_script" "fw-ip-list-update-cloudflare-script" {
     "sniff",
     "sensitive",
   ]
-  source = file("${path.module}/fw-ip-list-update-cloudflare.rsc")
+  source = file("${path.module}/scripts/fw-ip-list-update-cloudflare.rsc")
 }
 resource "mikrotik_scheduler" "fw-ip-list-update-cloudflare-schedule" {
   name = "fw-ip-list-update-cloudflare"
@@ -198,23 +198,23 @@ resource "mikrotik_scheduler" "fw-ip-list-update-cloudflare-schedule" {
   interval = 86399
 }
 
-# he.net ipv6 script
-resource "mikrotik_script" "check-he-ipv6-script" {
-  name = "check-he-ipv6"
-  owner = "admin"
-  policy = [
-    "ftp",
-    "reboot",
-    "read",
-    "write",
-    "policy",
-    "test",
-    "password",
-    "sniff",
-    "sensitive",
-  ]
-  source = file("${path.module}/he-ipv6.rsc")
-}
+# # he.net ipv6 script
+# resource "mikrotik_script" "check-he-ipv6-script" {
+#   name = "check-he-ipv6"
+#   owner = "admin"
+#   policy = [
+#     "ftp",
+#     "reboot",
+#     "read",
+#     "write",
+#     "policy",
+#     "test",
+#     "password",
+#     "sniff",
+#     "sensitive",
+#   ]
+#   source = file("${path.module}/scripts/he-ipv6.rsc")
+# }
 
 ### Firewall filter v6
 resource "mikrotik_script" "firewall-filter-v6-script" {
@@ -231,5 +231,23 @@ resource "mikrotik_script" "firewall-filter-v6-script" {
     "sniff",
     "sensitive",
   ]
-  source = file("${path.module}/firewall-filter-v6.rsc")
+  source = file("${path.module}/scripts/firewall-filter-v6.rsc")
+}
+
+### IPv6 settings
+resource "mikrotik_script" "ipv6-settings-script" {
+  name = "fipv6-settings"
+  owner = "admin"
+  policy = [
+    "ftp",
+    "reboot",
+    "read",
+    "write",
+    "policy",
+    "test",
+    "password",
+    "sniff",
+    "sensitive",
+  ]
+  source = file("${path.module}/scripts/ipv6-settings.rsc")
 }

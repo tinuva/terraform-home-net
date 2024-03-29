@@ -22,3 +22,8 @@ variable "records_local_only" {
         "host3" = "192.168.88.83"
     }
 }
+
+variable "ovh" {}
+
+variable "router_bridge_ports" {}
+variable "bridge_vlans" {}

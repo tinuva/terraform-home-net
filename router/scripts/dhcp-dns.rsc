@@ -1,3 +1,6 @@
+:global excludehost000000000001 "909c4ace21ef"
+:global excludehost000000000002 "88e9fe88abfe"
+
 :global shost000000000001 "router"
 :global shost000000000002 "ha"
 :global shost000000000003 "wiki"
@@ -35,7 +38,6 @@
 :global shost000000000035 "jellyfin"
 :global shost000000000036 "octo"
 :global shost000000000037 "alarmserver"
-
 :global shost000000000038 "dns2"
 :global shost000000000039 "cloudbox"
 :global shost000000000040 "sonarr2"
@@ -55,20 +57,20 @@
 :global shost000000000054 "pve-nuc11"
 :global shost000000000055 "overseerr2"
 :global shost000000000056 "zigbee2mqtt"
-
 :global shost000000000057 "diskstation"
 :global shost000000000058 "home-assistant"
-
 :global shost000000000059 "envisalink"
-
 :global shost000000000060 "router-vlan1"
 :global shost000000000061 "router-vlan20"
 :global shost000000000062 "router-vlan21"
 :global shost000000000063 "router-vlan22"
 :global shost000000000064 "router-vlan23"
 :global shost000000000065 "router-vlan24"
-
 :global shost000000000066 "mktxp-grafana"
+:global shost000000000067 "uptime"
+:global shost000000000068 "saltbox"
+:global shost000000000069 "login"
+
 
 :local zone "heaven.za.net";
 :local ttl "00:15:00"
@@ -79,6 +81,7 @@
 :local dnsnode
 :local dhcpnode
 
+# :log debug ("Test DHCP script: Before ip dns static");
 /ip dns static;
 :foreach i in=[find where name ~ (".*\\.".$zone) ] do={
     :set hostname [ get $i name ];
@@ -99,12 +102,12 @@
     :if ( found ) do={
         # :log debug ("Hostname ".$hostname." is static");
     } else={
-        # :log debug ("Lease expired for ".$hostname.", deleting DNS entry.");
+        :log debug ("Lease expired for ".$hostname.", deleting DNS entry.");
         /ip dns static remove $i;
     }
     }
 }
-
+# :log debug ("Test DHCP script: Before lease");
 /ip dhcp-server lease;
 :foreach i in=[find] do={
     :set hostname ""
@@ -112,33 +115,38 @@
     :set dhcpip [ get $i address ];
     :set mac [ get $i mac-address ];
     :while ($mac ~ ":") do={
-    :local pos [ :find $mac ":" ];
-    :set mac ( [ :pick $mac 0 $pos ] . [ :pick $mac ($pos + 1) 999 ] );
+        :local pos [ :find $mac ":" ];
+        :set mac ( [ :pick $mac 0 $pos ] . [ :pick $mac ($pos + 1) 999 ] );
     };
     :foreach n in=[ /system script environment find where name=("shost" . $mac) ] do={
-    :set hostname [ /system script environment get $n value ];
+        :set hostname [ /system script environment get $n value ];
     }
     :if ( [ :len $hostname ] = 0) do={
-    :set hostname [ get $i host-name ];
+        :set hostname [ get $i host-name ];
     }
+    :foreach e in=[ /system/script/environment find where name ~ "excludehost[0-9A-F]+" ] do={
+        :set $ehost [ /system/script/environment get $e value ]
+        :put ( $ehost );
+    }
+    # :log debug ("Test DHCP script: After ehost check");
     :if ( [ :len $hostname ] > 0) do={
-    :set hostname ( $hostname . "." . $zone );
-    /ip dns static;
-    :set dnsnode [ find where name=$hostname ];
-    :if ( [ :len $dnsnode ] > 0 ) do={
-# it exists. Is its IP the same?
-        :set dnsip [ get $dnsnode address ];
-        :if ( $dnsip = $dhcpip ) do={
-        # :log debug ("DNS entry for " . $hostname . " does not need updating.");
+        :set hostname ( $hostname . "." . $zone );
+        /ip dns static;
+        :set dnsnode [ find where name=$hostname ];
+        :if ( [ :len $dnsnode ] > 0 ) do={
+            # it exists. Is its IP the same?
+            :set dnsip [ get $dnsnode address ];
+            :if ( $dnsip = $dhcpip ) do={
+            # :log debug ("DNS entry for " . $hostname . " does not need updating.");
         } else={
-        # :log debug ("Replacing DNS entry for " . $hostname);
-        /ip dns static remove $dnsnode;
-        /ip dns static add name=$hostname address=$dhcpip ttl=$ttl;
+            :log debug ("ip different, replacing DNS entry for " . $hostname . " from " . $dnsip . " to " . $dhcpip);
+            /ip dns static remove $dnsnode;
+            /ip dns static add name=$hostname address=$dhcpip ttl=$ttl;
+            }
+        } else={
+            # it doesn't exist. Add it
+            :log debug ("doesn't exist, addding new DNS entry for " . $hostname);
+            /ip dns static add name=$hostname address=$dhcpip ttl=$ttl;
         }
-    } else={
-# it doesn't exist. Add it
-        # :log debug ("Adding new DNS entry for " . $hostname);
-        /ip dns static add name=$hostname address=$dhcpip ttl=$ttl;
-    }
     }
 }

@@ -16,6 +16,14 @@ resource "cloudflare_record" "bastion" {
   proxied = false
 }
 
+resource "cloudflare_record" "wg" {
+  zone_id  = var.zone_id
+  name    = "wg"
+  value   = "heaven.za.net"
+  type    = "CNAME"
+  proxied = false
+}
+
 resource "cloudflare_record" "mail" {
   zone_id  = var.zone_id
   name    = "mail"

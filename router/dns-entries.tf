@@ -14,8 +14,8 @@ resource "mikrotik_dns_record" "record_local_only" {
   ttl = 900
 }
 
-resource "mikrotik_dns_record" "bastion" {
-  name = "bastion.${var.domain}"
-  address = "10.0.3.13"
-  ttl = 900
-}
+# resource "mikrotik_dns_record" "bastion" {
+#   name = "bastion.${var.domain}"
+#   address = "10.0.21.8"
+#   ttl = 900
+# }

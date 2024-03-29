@@ -1,5 +1,5 @@
-:local ipssh "10.0.3.13"
-:local ipweb "10.0.3.13"
+:local ipssh "10.0.21.8"
+:local ipweb "10.0.21.8"
 :local iptorrent "10.0.3.20"
 :local porttorrent "51413"
 
@@ -13,6 +13,7 @@
 :if ([/ip firewall address-list print count-only where list="ssh-allowed"]=0) do {
     /ip firewall address-list add address=54.240.197.224/28 list=ssh-allowed
     /ip firewall address-list add address=99.78.144.128/25 list=ssh-allowed
+    /ip firewall address-list add address=105.27.196.114/32 list=ssh-allowed
 }
 
 # port 22 ssh
@@ -29,7 +30,7 @@
 :if ([/ip firewall nat print count-only where chain=dstnat && action=dst-nat && to-addresses=$ipweb && protocol="tcp" && in-interface-list="WAN" && dst-port="80" && src-address-list=CloudFlare]=0) do {
     :if ([/ip firewall nat print count-only where chain=dstnat && action=dst-nat && protocol="tcp" && in-interface-list="WAN" && dst-port="80"]!=0) do {
         :foreach rule in=[/ip firewall nat find chain=dstnat && action=dst-nat && protocol="tcp" && in-interface-list="WAN" && dst-port="80"] do={
-            /ip firewall nat remove $rule}
+            /ip firewall nat remove $rule}`
     }
     :log info message="creating port 80 forward to $ipweb"
     /ip firewall nat add chain=dstnat action=dst-nat to-addresses=$ipweb protocol=tcp in-interface-list=WAN dst-port=80 src-address-list=CloudFlare
