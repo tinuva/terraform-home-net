@@ -17,19 +17,10 @@ resource "routeros_interface_bridge_settings" "settings" {
 resource "routeros_interface_bridge_port" "bridge_port" {
   for_each = var.switch_bridge_ports
   
-  bridge    = routeros_interface_bridge.bridge.name
-  interface = each.key
-  pvid      = each.value.untagged_vlan
-  trusted   = true # REQUIRED for DHCP to function
-  ingress_filtering = true
-  comment   = each.value.name
-}
-
-# add comments to ports for identification
-resource "routeros_interface_ethernet" "port" {
-  for_each = var.switch_bridge_ports
-
-  factory_name = each.key
-  name         = each.key
-  comment      = each.value.name
+  bridge              = routeros_interface_bridge.bridge.name
+  interface           = each.key
+  pvid                = each.value.untagged_vlan
+  trusted             = true # REQUIRED for DHCP to function
+  ingress_filtering   = true
+  comment             = each.value.name
 }
