@@ -1,28 +1,4 @@
-# create a bridge named "bridge"
-# https://registry.terraform.io/providers/terraform-routeros/routeros/latest/docs/resources/interface_bridge
-resource "routeros_interface_bridge" "bridge" {
-  name           = "bridge"
-  vlan_filtering = true
-  protocol_mode  = "none" # disable until 3com switch removed
-}
 
-# ensure allow_fast_path is set
-# https://registry.terraform.io/providers/terraform-routeros/routeros/latest/docs/resources/interface_bridge_settings
-resource "routeros_interface_bridge_settings" "settings" {
-  allow_fast_path = true
-}
-
-# add ports to bridge
-# https://registry.terraform.io/providers/terraform-routeros/routeros/latest/docs/resources/interface_bridge_port
-resource "routeros_interface_bridge_port" "bridge_port" {
-  for_each = var.router_bridge_ports
-  
-  bridge    = routeros_interface_bridge.bridge.name
-  interface = each.key 
-  pvid      = each.value
-  trusted   = true # REQUIRED for DHCP to function
-  ingress_filtering = true
-}
 
 # create vlans
 # https://registry.terraform.io/providers/terraform-routeros/routeros/latest/docs/resources/interface_bridge_vlan
@@ -34,8 +10,8 @@ resource "routeros_interface_bridge_vlan" "bridge_vlan" {
 
   vlan_ids = each.value.vlan
   bridge    = routeros_interface_bridge.bridge.name
-  tagged = concat(["bridge"], each.value.router_ports_tagged)  # always add vlan as tagged to the bridge itself
-  untagged = each.value.router_ports_untagged
+  untagged  = [for port, detail in var.router_bridge_ports: port if detail.untagged_vlan == each.value.vlan ]
+  tagged    = concat(["bridge"], [for port, detail in var.router_bridge_ports: port if contains(detail.tagged_vlans, each.value.vlan) ])
   comment = "${each.key}-${each.value.name}"
 }
 
@@ -53,18 +29,6 @@ resource "routeros_vlan" "vlan" {
 }
 
 # add interface to "lan" interface list
-
-
-# resource "routeros_interface_list_member" "list_member" {
-#   interface = "ether1"
-#   list      = "my-list"
-# }
-
-# resource "mikrotik_interface_list" "lan" {
-#   name    = "LAN"
-#   comment = "All LAN ethernet interfaces - temp"
-# }
-
 resource "routeros_interface_list" "lan" {
   name = "LAN"
 }
