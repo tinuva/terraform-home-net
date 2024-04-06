@@ -20,6 +20,8 @@ module "powerdns" {
   records_a = var.records_a
   records_aaaa = var.records_aaaa
   records_cname = var.records_cname
+
+  hosts = var.hosts
 }
 
 module "router" {
@@ -37,6 +39,25 @@ module "router" {
 
   router_bridge_ports = var.router_bridge_ports
   bridge_vlans = var.bridge_vlans
+  hosts = var.hosts
+}
+
+module "router2" {
+  source          = "./network/router2"
+  
+  router_host = var.router2_host
+  router_hosturl = var.router2_hosturl
+  router_user = var.router_user
+  router_pass = var.router_pass
+  records = var.records
+  domain = var.domain
+  records_local_only = var.records_local_only
+
+  ovh = var.ovh
+
+  router_bridge_ports = var.router2_bridge_ports
+  bridge_vlans = var.bridge_vlans
+  hosts = var.hosts
 }
 
 module "switch-main" {

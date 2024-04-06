@@ -5,3 +5,5 @@ variable "records_cname" { }
 
 variable "pdns_server_url" { }
 variable "pdns_secret" { }
+
+variable "hosts" { }

@@ -1,3 +1,60 @@
+### vlan ports - router2
+variable "router2_bridge_ports" {
+  description = "Router port config"
+  type        = map(object({
+    name = string
+    tagged_vlans = list(number)
+    untagged_vlan = number  # set to 0 if not a bridge vlan port
+  }))
+  default = {
+    "ether1" = {
+      name                      = "internet-ftth"
+      untagged_vlan             = 0
+      tagged_vlans              = []
+    }
+    "ether4" = {
+      name                      = "camera-back"
+      untagged_vlan             = 23
+      tagged_vlans              = []
+    }
+    "ether5" = {
+      name                      = "ripe-probe"
+      untagged_vlan             = 23
+      tagged_vlans              = []
+    }
+    "ether6" = {
+      name                      = "braai-room-lan-at-braai"
+      untagged_vlan             = 20
+      tagged_vlans              = []
+    }
+    "ether7" = {
+      name                      = "lounge-rb750"
+      untagged_vlan             = 1
+      tagged_vlans              = [20,21,22,23]
+    }
+    "ether8" = {
+      name                      = "office-wifi"
+      untagged_vlan             = 21
+      tagged_vlans              = [20,22,23]
+    }
+    "ether9" = {
+      name                      = "synology-nas"
+      untagged_vlan             = 21
+      tagged_vlans              = []
+    }
+    "ether10" = {
+      name                      = "nuc"
+      untagged_vlan             = 21
+      tagged_vlans              = [20,22]
+    }
+    "sfp1" = {
+      name                      = "uplink"
+      untagged_vlan             = 1
+      tagged_vlans              = [20,21,22,23,24]
+    }
+  }
+}
+
 ### vlan ports - router
 variable "router_bridge_ports" {
   description = "Router port config"
@@ -165,8 +222,8 @@ variable "switch_bridge_ports" {
       tagged_vlans              = []
     }
     "ether23" = {
-      name                      = ""
-      untagged_vlan             = 22
+      name                      = "temp-clients"
+      untagged_vlan             = 20
       tagged_vlans              = []
     }
     "ether24" = {
@@ -219,12 +276,25 @@ variable "bridge_vlans" {
   }
 }
 
+variable "hosts" {
+  description = "Lan hosts config"
+  default = {
+    "dev" = {
+      mac_addr             = "72:73:A7:53:5A:CE"
+      vlan                 = 21
+      ip_suffix            = 5
+    }
+  }
+}
+
 variable "adguard_host" { }
 variable "adguard_user" { }
 variable "adguard_pass" { }
 
 variable "router_host" { }
 variable "router_hosturl" { }
+variable "router2_host" { }
+variable "router2_hosturl" { }
 variable "router_user" { }
 variable "router_pass" { }
 
