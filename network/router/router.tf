@@ -1,10 +1,3 @@
-# configure the mikrotik provider
-provider "mikrotik" {
-  host = var.router_host
-  username = var.router_user
-  password = var.router_pass
-}
-
 # configure the routeros provider
 provider "routeros" {
   hosturl = var.router_hosturl
@@ -17,9 +10,6 @@ provider "routeros" {
 # import providers
 terraform {
   required_providers {
-    mikrotik = {
-      source = "ddelnano/mikrotik"
-    }
     routeros = {
       source = "terraform-routeros/routeros"
     }

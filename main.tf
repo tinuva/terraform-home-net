@@ -23,7 +23,6 @@ module "powerdns" {
 module "router" {
   source = "./network/router"
 
-  router_host        = var.router_host
   router_hosturl     = var.router_hosturl
   router_user        = var.router_user
   router_pass        = var.router_pass
@@ -44,7 +43,6 @@ module "router" {
 module "router2" {
   source = "./network/router2"
 
-  router_host        = var.router2_host
   router_hosturl     = var.router2_hosturl
   router_user        = var.router_user
   router_pass        = var.router_pass
