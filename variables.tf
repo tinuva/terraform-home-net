@@ -287,6 +287,41 @@ variable "hosts" {
   }
 }
 
+variable "ipv4_firewall_filter_rules" {
+  type = list(object({
+    chain              = string
+    action             = string
+    connection_state   = optional(string)
+    connection_nat_state = optional(string)
+    in_interface_list  = optional(string, "all")
+    out_interface_list = optional(string)
+    src_address        = optional(string, "0.0.0.0/0")
+    dst_address        = optional(string)
+    src_port           = optional(string)
+    dst_port           = optional(string)
+    protocol           = optional(string)
+    ipsec_policy       = optional(string)
+    comment            = optional(string, "(terraform-defined)")
+    log                = optional(bool, false)
+    disabled           = optional(bool, true)
+  }))
+
+  default = [
+    { disabled = false, chain = "input", action = "accept", comment = "defconf: accept established,related,untracked", connection_state = "established,related,untracked" },
+    { disabled = false, chain = "input", action = "drop", comment = "defconf: drop invalid", connection_state = "invalid" },
+    { disabled = false, chain = "input", action = "accept", comment = "defconf: accept ICMP", protocol = "icmp" },
+    { disabled = false, chain = "input", action = "accept", comment = "defconf: accept to local loopback (for CAPsMAN)", dst_address = "127.0.0.1" },
+    { disabled = false, chain = "input", action = "accept", comment = "wireguard: david", protocol = "udp", dst_port = "13230" },
+    { disabled = false, chain = "input", action = "drop", comment = "defconf: drop all not coming from LAN", in_interface_list = "!LAN" },
+    { disabled = false, chain = "forward", action = "accept", comment = "defconf: accept in ipsec policy", ipsec_policy = "in,ipsec" },
+    { disabled = false, chain = "forward", action = "accept", comment = "defconf: accept out ipsec policy", ipsec_policy = "out,ipsec" },
+    { disabled = false, chain = "forward", action = "fasttrack-connection", comment = "defconf: fasttrack", connection_state = "established,related" },
+    { disabled = false, chain = "forward", action = "accept", comment = "defconf: accept established,related, untracked", connection_state = "established,related,untracked" },
+    { disabled = false, chain = "forward", action = "drop", comment = "defconf: drop invalid", connection_state = "invalid" },
+    { disabled = false, chain = "forward", action = "drop", comment = "defconf: drop all from WAN not DSTNATed", connection_state = "new", connection_nat_state="!dstnat", in_interface_list="WAN" },
+  ]
+}
+
 variable "adguard_host" {}
 variable "adguard_user" {}
 variable "adguard_pass" {}

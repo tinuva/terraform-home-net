@@ -29,3 +29,5 @@ variable "router_bridge_ports" {}
 variable "bridge_vlans" {}
 
 variable "hosts" {}
+
+variable "ipv4_firewall_filter_rules" {}

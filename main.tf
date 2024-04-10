@@ -54,6 +54,7 @@ module "router2" {
   router_bridge_ports = var.router2_bridge_ports
   bridge_vlans        = var.bridge_vlans
   hosts               = var.hosts
+  ipv4_firewall_filter_rules = var.ipv4_firewall_filter_rules
 }
 
 module "switch-main" {
