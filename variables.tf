@@ -289,14 +289,53 @@ variable "hosts" {
 
 variable "ipv4_firewall_filter_rules" {
   type = list(object({
+    chain                = string
+    action               = string
+    connection_state     = optional(string)
+    connection_nat_state = optional(string)
+    in_interface_list    = optional(string)
+    out_interface_list   = optional(string)
+    src_address          = optional(string)
+    dst_address          = optional(string)
+    src_address_list     = optional(string)
+    dst_address_list     = optional(string)
+    src_port             = optional(string)
+    dst_port             = optional(string)
+    protocol             = optional(string)
+    ipsec_policy         = optional(string)
+    comment              = optional(string, "(terraform-defined)")
+    log                  = optional(bool, false)
+    disabled             = optional(bool, true)
+  }))
+
+  default = [
+    { disabled = false, chain = "input", action = "accept", comment = "defconf: accept established,related,untracked", connection_state = "established,related,untracked" },
+    { disabled = false, chain = "input", action = "drop", comment = "defconf: drop invalid", connection_state = "invalid" },
+    { disabled = true, chain = "input", action = "accept", comment = "defconf: accept ICMP", protocol = "icmp" },
+    { disabled = false, chain = "input", action = "accept", comment = "defconf: accept ICMP from list", protocol = "icmp", src_address_list = "icmp-allowed" },
+    { disabled = false, chain = "input", action = "accept", comment = "defconf: accept to local loopback (for CAPsMAN)", dst_address = "127.0.0.1" },
+    { disabled = false, chain = "input", action = "accept", comment = "wireguard: david", protocol = "udp", dst_port = "13230" },
+    { disabled = false, chain = "input", action = "drop", comment = "defconf: drop all not coming from LAN", in_interface_list = "!LAN" },
+    { disabled = false, chain = "forward", action = "accept", comment = "defconf: accept in ipsec policy", ipsec_policy = "in,ipsec" },
+    { disabled = false, chain = "forward", action = "accept", comment = "defconf: accept out ipsec policy", ipsec_policy = "out,ipsec" },
+    { disabled = false, chain = "forward", action = "fasttrack-connection", comment = "defconf: fasttrack", connection_state = "established,related" },
+    { disabled = false, chain = "forward", action = "accept", comment = "defconf: accept established,related, untracked", connection_state = "established,related,untracked" },
+    { disabled = false, chain = "forward", action = "drop", comment = "defconf: drop invalid", connection_state = "invalid" },
+    { disabled = false, chain = "forward", action = "drop", comment = "defconf: drop all from WAN not DSTNATed", connection_state = "new", connection_nat_state = "!dstnat", in_interface_list = "WAN" },
+  ]
+}
+
+variable "ipv4_firewall_nat_rules" {
+  type = list(object({
     chain              = string
     action             = string
-    connection_state   = optional(string)
-    connection_nat_state = optional(string)
-    in_interface_list  = optional(string, "all")
+    in_interface_list  = optional(string)
     out_interface_list = optional(string)
-    src_address        = optional(string, "0.0.0.0/0")
+    src_address        = optional(string)
     dst_address        = optional(string)
+    src_address_list   = optional(string)
+    dst_address_list   = optional(string)
+    to_addresses       = optional(string)
     src_port           = optional(string)
     dst_port           = optional(string)
     protocol           = optional(string)
@@ -307,19 +346,28 @@ variable "ipv4_firewall_filter_rules" {
   }))
 
   default = [
-    { disabled = false, chain = "input", action = "accept", comment = "defconf: accept established,related,untracked", connection_state = "established,related,untracked" },
-    { disabled = false, chain = "input", action = "drop", comment = "defconf: drop invalid", connection_state = "invalid" },
-    { disabled = false, chain = "input", action = "accept", comment = "defconf: accept ICMP", protocol = "icmp" },
-    { disabled = false, chain = "input", action = "accept", comment = "defconf: accept to local loopback (for CAPsMAN)", dst_address = "127.0.0.1" },
-    { disabled = false, chain = "input", action = "accept", comment = "wireguard: david", protocol = "udp", dst_port = "13230" },
-    { disabled = false, chain = "input", action = "drop", comment = "defconf: drop all not coming from LAN", in_interface_list = "!LAN" },
-    { disabled = false, chain = "forward", action = "accept", comment = "defconf: accept in ipsec policy", ipsec_policy = "in,ipsec" },
-    { disabled = false, chain = "forward", action = "accept", comment = "defconf: accept out ipsec policy", ipsec_policy = "out,ipsec" },
-    { disabled = false, chain = "forward", action = "fasttrack-connection", comment = "defconf: fasttrack", connection_state = "established,related" },
-    { disabled = false, chain = "forward", action = "accept", comment = "defconf: accept established,related, untracked", connection_state = "established,related,untracked" },
-    { disabled = false, chain = "forward", action = "drop", comment = "defconf: drop invalid", connection_state = "invalid" },
-    { disabled = false, chain = "forward", action = "drop", comment = "defconf: drop all from WAN not DSTNATed", connection_state = "new", connection_nat_state="!dstnat", in_interface_list="WAN" },
+    { disabled = false, chain = "srcnat", action = "masquerade", comment = "defconf: masquerade WAN out", out_interface_list = "WAN", ipsec_policy = "out,none" },
+    { disabled = false, chain = "srcnat", action = "masquerade", comment = "evnisalink fix", dst_address = "10.0.1.18" },
+    { disabled = false, chain = "dstnat", action = "dst-nat", comment = "ssh", protocol="tcp", dst_port="22", to_addresses = "10.0.21.8", src_address_list = "ssh-allowed", in_interface_list="WAN" },
+    { disabled = false, chain = "dstnat", action = "dst-nat", comment = "http", protocol="tcp", dst_port="80", to_addresses = "10.0.21.8", src_address_list = "CloudFlare", in_interface_list="WAN" },
+    { disabled = false, chain = "dstnat", action = "dst-nat", comment = "https", protocol="tcp", dst_port="443", to_addresses = "10.0.21.8", src_address_list = "CloudFlare", in_interface_list="WAN" },
   ]
+}
+
+variable "ipv4_firewall_address_lists" {
+  default = {
+    "icmp-allowed" = [
+      "66.220.2.74"
+    ]
+    "ssh-allowed" = [
+      "105.27.196.102",
+      "105.27.196.114",
+      "15.244.0.0/14",
+      "15.248.0.0/16",
+      "54.240.197.224/28",
+      "99.78.144.128/25",
+    ]
+  }
 }
 
 variable "adguard_host" {}

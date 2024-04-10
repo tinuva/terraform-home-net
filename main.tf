@@ -33,9 +33,12 @@ module "router" {
 
   ovh = var.ovh
 
-  router_bridge_ports = var.router_bridge_ports
-  bridge_vlans        = var.bridge_vlans
-  hosts               = var.hosts
+  router_bridge_ports         = var.router_bridge_ports
+  bridge_vlans                = var.bridge_vlans
+  hosts                       = var.hosts
+  ipv4_firewall_filter_rules  = var.ipv4_firewall_filter_rules
+  ipv4_firewall_nat_rules     = var.ipv4_firewall_nat_rules
+  ipv4_firewall_address_lists = var.ipv4_firewall_address_lists
 }
 
 module "router2" {
@@ -51,10 +54,12 @@ module "router2" {
 
   ovh = var.ovh
 
-  router_bridge_ports = var.router2_bridge_ports
-  bridge_vlans        = var.bridge_vlans
-  hosts               = var.hosts
-  ipv4_firewall_filter_rules = var.ipv4_firewall_filter_rules
+  router_bridge_ports         = var.router2_bridge_ports
+  bridge_vlans                = var.bridge_vlans
+  hosts                       = var.hosts
+  ipv4_firewall_filter_rules  = var.ipv4_firewall_filter_rules
+  ipv4_firewall_nat_rules     = var.ipv4_firewall_nat_rules
+  ipv4_firewall_address_lists = var.ipv4_firewall_address_lists
 }
 
 module "switch-main" {

@@ -31,3 +31,5 @@ variable "bridge_vlans" {}
 variable "hosts" {}
 
 variable "ipv4_firewall_filter_rules" {}
+variable "ipv4_firewall_nat_rules" {}
+variable "ipv4_firewall_address_lists" {}
