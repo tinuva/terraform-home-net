@@ -314,7 +314,7 @@ variable "ipv4_firewall_filter_rules" {
     { disabled = true, chain = "input", action = "accept", comment = "defconf: accept ICMP", protocol = "icmp" },
     { disabled = false, chain = "input", action = "accept", comment = "defconf: accept ICMP from list", protocol = "icmp", src_address_list = "icmp-allowed" },
     { disabled = false, chain = "input", action = "accept", comment = "defconf: accept to local loopback (for CAPsMAN)", dst_address = "127.0.0.1" },
-    { disabled = false, chain = "input", action = "accept", comment = "wireguard: david", protocol = "udp", dst_port = "13230" },
+    { disabled = false, chain = "input", action = "accept", comment = "wireguard: david", protocol = "udp", dst_port = "13231" },
     { disabled = false, chain = "input", action = "drop", comment = "defconf: drop all not coming from LAN", in_interface_list = "!LAN" },
     { disabled = false, chain = "forward", action = "accept", comment = "defconf: accept in ipsec policy", ipsec_policy = "in,ipsec" },
     { disabled = false, chain = "forward", action = "accept", comment = "defconf: accept out ipsec policy", ipsec_policy = "out,ipsec" },
@@ -351,6 +351,8 @@ variable "ipv4_firewall_nat_rules" {
     { disabled = false, chain = "dstnat", action = "dst-nat", comment = "ssh", protocol="tcp", dst_port="22", to_addresses = "10.0.21.8", src_address_list = "ssh-allowed", in_interface_list="WAN" },
     { disabled = false, chain = "dstnat", action = "dst-nat", comment = "http", protocol="tcp", dst_port="80", to_addresses = "10.0.21.8", src_address_list = "CloudFlare", in_interface_list="WAN" },
     { disabled = false, chain = "dstnat", action = "dst-nat", comment = "https", protocol="tcp", dst_port="443", to_addresses = "10.0.21.8", src_address_list = "CloudFlare", in_interface_list="WAN" },
+    { disabled = false, chain = "dstnat", action = "dst-nat", comment = "torrent", protocol="tcp", dst_port="51413", to_addresses = "10.0.21.24", in_interface_list="WAN" },
+    { disabled = false, chain = "dstnat", action = "dst-nat", comment = "torrent", protocol="udp", dst_port="51413", to_addresses = "10.0.21.24", in_interface_list="WAN" },
   ]
 }
 
