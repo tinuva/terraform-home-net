@@ -43,6 +43,8 @@ resource "routeros_ip_firewall_filter" "rules" {
   dst_port          = each.value.dst_port
   protocol          = each.value.protocol
   ipsec_policy      = each.value.ipsec_policy
+  hw_offload        = each.value.hw_offload
+  depends_on    = [routeros_firewall_addr_list.firewall_address_lists]
 }
 
 ## Order filter rules
@@ -73,6 +75,7 @@ resource "routeros_ip_firewall_nat" "rules" {
   dst_port          = each.value.dst_port
   protocol          = each.value.protocol
   ipsec_policy      = each.value.ipsec_policy
+  depends_on    = [routeros_firewall_addr_list.firewall_address_lists]
 }
 
 ## Order nat rules
