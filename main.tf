@@ -38,6 +38,8 @@ module "router" {
   ipv4_firewall_filter_rules  = var.ipv4_firewall_filter_rules
   ipv4_firewall_nat_rules     = var.ipv4_firewall_nat_rules
   ipv4_firewall_address_lists = var.ipv4_firewall_address_lists
+    ipv6_firewall_filter_rules  = var.ipv6_firewall_filter_rules
+  ipv6_firewall_address_lists = var.ipv6_firewall_address_lists
 }
 
 module "router2" {
@@ -58,6 +60,8 @@ module "router2" {
   ipv4_firewall_filter_rules  = var.ipv4_firewall_filter_rules
   ipv4_firewall_nat_rules     = var.ipv4_firewall_nat_rules
   ipv4_firewall_address_lists = var.ipv4_firewall_address_lists
+  ipv6_firewall_filter_rules  = var.ipv6_firewall_filter_rules
+  ipv6_firewall_address_lists = var.ipv6_firewall_address_lists
 }
 
 module "switch-main" {

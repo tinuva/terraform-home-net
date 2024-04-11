@@ -32,3 +32,5 @@ variable "hosts" {}
 variable "ipv4_firewall_filter_rules" {}
 variable "ipv4_firewall_nat_rules" {}
 variable "ipv4_firewall_address_lists" {}
+variable "ipv6_firewall_filter_rules" {}
+variable "ipv6_firewall_address_lists" {}
