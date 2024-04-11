@@ -317,7 +317,7 @@ variable "ipv4_firewall_filter_rules" {
     { disabled = false, chain = "input", action = "drop", comment = "defconf: drop all not coming from LAN", in_interface_list = "!LAN" },
     { disabled = false, chain = "forward", action = "accept", comment = "defconf: accept in ipsec policy", ipsec_policy = "in,ipsec" },
     { disabled = false, chain = "forward", action = "accept", comment = "defconf: accept out ipsec policy", ipsec_policy = "out,ipsec" },
-    { disabled = false, chain = "forward", action = "fasttrack-connection", comment = "defconf: fasttrack", connection_state = "established,related", hw_offload=true },
+    { disabled = false, chain = "forward", action = "fasttrack-connection", comment = "defconf: fasttrack", connection_state = "established,related", hw_offload = true },
     { disabled = false, chain = "forward", action = "accept", comment = "defconf: accept established,related, untracked", connection_state = "established,related,untracked" },
     { disabled = false, chain = "forward", action = "drop", comment = "defconf: drop invalid", connection_state = "invalid" },
     { disabled = false, chain = "forward", action = "drop", comment = "defconf: drop all from WAN not DSTNATed", connection_state = "new", connection_nat_state = "!dstnat", in_interface_list = "WAN" },
@@ -347,11 +347,11 @@ variable "ipv4_firewall_nat_rules" {
   default = [
     { disabled = false, chain = "srcnat", action = "masquerade", comment = "defconf: masquerade WAN out", out_interface_list = "WAN", ipsec_policy = "out,none" },
     { disabled = false, chain = "srcnat", action = "masquerade", comment = "evnisalink fix", dst_address = "10.0.1.18" },
-    { disabled = false, chain = "dstnat", action = "dst-nat", comment = "ssh", protocol="tcp", dst_port="22", to_addresses = "10.0.21.8", src_address_list = "ssh-allowed", in_interface_list="WAN" },
-    { disabled = false, chain = "dstnat", action = "dst-nat", comment = "http", protocol="tcp", dst_port="80", to_addresses = "10.0.21.8", src_address_list = "CloudFlare", in_interface_list="WAN" },
-    { disabled = false, chain = "dstnat", action = "dst-nat", comment = "https", protocol="tcp", dst_port="443", to_addresses = "10.0.21.8", src_address_list = "CloudFlare", in_interface_list="WAN" },
-    { disabled = false, chain = "dstnat", action = "dst-nat", comment = "torrent", protocol="tcp", dst_port="51413", to_addresses = "10.0.21.24", in_interface_list="WAN" },
-    { disabled = false, chain = "dstnat", action = "dst-nat", comment = "torrent", protocol="udp", dst_port="51413", to_addresses = "10.0.21.24", in_interface_list="WAN" },
+    { disabled = false, chain = "dstnat", action = "dst-nat", comment = "ssh", protocol = "tcp", dst_port = "22", to_addresses = "10.0.21.8", src_address_list = "ssh-allowed", in_interface_list = "WAN" },
+    { disabled = false, chain = "dstnat", action = "dst-nat", comment = "http", protocol = "tcp", dst_port = "80", to_addresses = "10.0.21.8", src_address_list = "CloudFlare", in_interface_list = "WAN" },
+    { disabled = false, chain = "dstnat", action = "dst-nat", comment = "https", protocol = "tcp", dst_port = "443", to_addresses = "10.0.21.8", src_address_list = "CloudFlare", in_interface_list = "WAN" },
+    { disabled = false, chain = "dstnat", action = "dst-nat", comment = "torrent", protocol = "tcp", dst_port = "51413", to_addresses = "10.0.21.24", in_interface_list = "WAN" },
+    { disabled = false, chain = "dstnat", action = "dst-nat", comment = "torrent", protocol = "udp", dst_port = "51413", to_addresses = "10.0.21.24", in_interface_list = "WAN" },
   ]
 }
 
@@ -374,71 +374,71 @@ variable "ipv4_firewall_address_lists" {
 variable "ipv6_firewall_address_lists" {
   default = {
     "bad-ipv6" = [
-        {"address"="::/128", comment="defconf: unspecified address"},
-        {"address"="::1/128", comment="defconf: lo"},
-        {"address"="fec0::/10", comment="defconf: site-local"},
-        {"address"="::ffff:0.0.0.0/96", comment="defconf: ipv4-mapped"},
-        {"address"="::/96", comment="defconf: ipv4 compat"},
-        {"address"="100::/64", comment="defconf: discard only"},
-        {"address"="2001:db8::/32", comment="defconf: documentation"},
-        {"address"="2001:10::/28", comment="defconf: ORCHID"},
-        {"address"="3ffe::/16", comment="defconf: 6bone"},
-        {"address"="::224.0.0.0/100", comment="defconf: other"},
-        {"address"="::127.0.0.0/104", comment="defconf: other"},
-        {"address"="::/104", comment="defconf: other"},
-        {"address"="::255.0.0.0/104", comment="defconf: other"},
+      { "address" = "::/128", comment = "defconf: unspecified address" },
+      { "address" = "::1/128", comment = "defconf: lo" },
+      { "address" = "fec0::/10", comment = "defconf: site-local" },
+      { "address" = "::ffff:0.0.0.0/96", comment = "defconf: ipv4-mapped" },
+      { "address" = "::/96", comment = "defconf: ipv4 compat" },
+      { "address" = "100::/64", comment = "defconf: discard only" },
+      { "address" = "2001:db8::/32", comment = "defconf: documentation" },
+      { "address" = "2001:10::/28", comment = "defconf: ORCHID" },
+      { "address" = "3ffe::/16", comment = "defconf: 6bone" },
+      { "address" = "::224.0.0.0/100", comment = "defconf: other" },
+      { "address" = "::127.0.0.0/104", comment = "defconf: other" },
+      { "address" = "::/104", comment = "defconf: other" },
+      { "address" = "::255.0.0.0/104", comment = "defconf: other" },
     ]
   }
 }
 
 variable "ipv6_firewall_filter_rules" {
   type = list(object({
-    chain                = string
-    action               = string
-    connection_state     = optional(string)
-    in_interface         = optional(string)
-    out_interface        = optional(string)
-    in_interface_list    = optional(string)
-    out_interface_list   = optional(string)
-    src_address          = optional(string)
-    dst_address          = optional(string)
-    src_address_list     = optional(string)
-    dst_address_list     = optional(string)
-    src_port             = optional(string)
-    dst_port             = optional(string)
-    protocol             = optional(string)
-    ipsec_policy         = optional(string)
-    comment              = optional(string, "(terraform-defined)")
-    log                  = optional(bool, false)
-    disabled             = optional(bool, true)
+    chain              = string
+    action             = string
+    connection_state   = optional(string)
+    in_interface       = optional(string)
+    out_interface      = optional(string)
+    in_interface_list  = optional(string)
+    out_interface_list = optional(string)
+    src_address        = optional(string)
+    dst_address        = optional(string)
+    src_address_list   = optional(string)
+    dst_address_list   = optional(string)
+    src_port           = optional(string)
+    dst_port           = optional(string)
+    protocol           = optional(string)
+    ipsec_policy       = optional(string)
+    comment            = optional(string, "(terraform-defined)")
+    log                = optional(bool, false)
+    disabled           = optional(bool, true)
   }))
 
   default = [
     # input chain
-    { disabled = false, action="accept", chain="input", comment="defconf: accept established,related,untracked", connection-state="established,related,untracked"},
-    { disabled = false, action="drop", chain="input", comment="defconf: drop invalid", connection-state="invalid"},
-    { disabled = false, action="accept", chain="input", comment="defconf: accept ICMPv6", protocol="icmpv6"},
-    { disabled = false, action="accept", chain="input", comment="defconf: accept UDP traceroute", port="33434-33534", protocol="udp"},
-    { disabled = false, action="accept", chain="input", comment="defconf: accept DHCPv6-Client prefix delegation", dst-port="546", protocol="udp", src-address="fe80::/10"},
-    { disabled = false, action="accept", chain="input", comment="defconf: accept IKE", dst-port="500,4500", protocol="udp"},
-    { disabled = false, action="accept", chain="input", comment="defconf: accept ipsec AH", protocol="ipsec-ah"},
-    { disabled = false, action="accept", chain="input", comment="defconf: accept ipsec ESP", protocol="ipsec-esp"},
-    { disabled = false, action="accept", chain="input", comment="defconf: accept all that matches ipsec policy", ipsec-policy="in,ipsec"},
-    { disabled = false, action="accept", chain="input", comment="accept: dhcpv6", protocol="udp", dst-port="546", in_interface="all-ppp" },
-    { disabled = false, action="drop", chain="input", comment="defconf: drop everything else not coming from LAN", in_interface_list="!LAN"},
+    { disabled = false, action = "accept", chain = "input", comment = "defconf: accept established,related,untracked", connection-state = "established,related,untracked" },
+    { disabled = false, action = "drop", chain = "input", comment = "defconf: drop invalid", connection-state = "invalid" },
+    { disabled = false, action = "accept", chain = "input", comment = "defconf: accept ICMPv6", protocol = "icmpv6" },
+    { disabled = false, action = "accept", chain = "input", comment = "defconf: accept UDP traceroute", port = "33434-33534", protocol = "udp" },
+    { disabled = false, action = "accept", chain = "input", comment = "defconf: accept DHCPv6-Client prefix delegation", dst-port = "546", protocol = "udp", src-address = "fe80::/10" },
+    { disabled = false, action = "accept", chain = "input", comment = "defconf: accept IKE", dst-port = "500,4500", protocol = "udp" },
+    { disabled = false, action = "accept", chain = "input", comment = "defconf: accept ipsec AH", protocol = "ipsec-ah" },
+    { disabled = false, action = "accept", chain = "input", comment = "defconf: accept ipsec ESP", protocol = "ipsec-esp" },
+    { disabled = false, action = "accept", chain = "input", comment = "defconf: accept all that matches ipsec policy", ipsec-policy = "in,ipsec" },
+    { disabled = false, action = "accept", chain = "input", comment = "accept: dhcpv6", protocol = "udp", dst-port = "546", in_interface = "all-ppp" },
+    { disabled = false, action = "drop", chain = "input", comment = "defconf: drop everything else not coming from LAN", in_interface_list = "!LAN" },
     # forward chain
-    { disabled = false, action="accept", chain="forward", comment="defconf: accept established,related,untracked", connection-state="established,related,untracked" },
-    { disabled = false, action="drop", chain="forward", comment="defconf: drop invalid", connection-state="invalid" },
-    { disabled = false, action="drop", chain="forward", comment="defconf: drop packets with bad src ipv6", src-address-list="bad-ipv6" },
-    { disabled = false, action="drop", chain="forward", comment="defconf: drop packets with bad dst ipv6", dst-address-list="bad-ipv6" },
-    { disabled = true, action="drop", chain="forward", comment="defconf: rfc4890 fd00:: drop hop-limit=1", hop-limit="equal:1", protocol="icmpv6" },
-    { disabled = false, action="accept", chain="forward", comment="defconf: accept ICMPv6", protocol="icmpv6" },
-    { disabled = false, action="accept", chain="forward", comment="defconf: accept HIP", protocol="139" },
-    { disabled = false, action="accept", chain="forward", comment="defconf: accept IKE", dst-port="500,4500", protocol="udp" },
-    { disabled = false, action="accept", chain="forward", comment="defconf: accept ipsec AH", protocol="ipsec-ah" },
-    { disabled = false, action="accept", chain="forward", comment="defconf: accept ipsec ESP", protocol="ipsec-esp" },
-    { disabled = false, action="accept", chain="forward", comment="defconf: accept all that matches ipsec policy", ipsec-policy="in,ipsec" },
-    { disabled = false, action="drop", chain="forward", comment="defconf: drop everything else not coming from LAN", in_interface_list="!LAN" },
+    { disabled = false, action = "accept", chain = "forward", comment = "defconf: accept established,related,untracked", connection-state = "established,related,untracked" },
+    { disabled = false, action = "drop", chain = "forward", comment = "defconf: drop invalid", connection-state = "invalid" },
+    { disabled = false, action = "drop", chain = "forward", comment = "defconf: drop packets with bad src ipv6", src-address-list = "bad-ipv6" },
+    { disabled = false, action = "drop", chain = "forward", comment = "defconf: drop packets with bad dst ipv6", dst-address-list = "bad-ipv6" },
+    { disabled = true, action = "drop", chain = "forward", comment = "defconf: rfc4890 fd00:: drop hop-limit=1", hop-limit = "equal:1", protocol = "icmpv6" },
+    { disabled = false, action = "accept", chain = "forward", comment = "defconf: accept ICMPv6", protocol = "icmpv6" },
+    { disabled = false, action = "accept", chain = "forward", comment = "defconf: accept HIP", protocol = "139" },
+    { disabled = false, action = "accept", chain = "forward", comment = "defconf: accept IKE", dst-port = "500,4500", protocol = "udp" },
+    { disabled = false, action = "accept", chain = "forward", comment = "defconf: accept ipsec AH", protocol = "ipsec-ah" },
+    { disabled = false, action = "accept", chain = "forward", comment = "defconf: accept ipsec ESP", protocol = "ipsec-esp" },
+    { disabled = false, action = "accept", chain = "forward", comment = "defconf: accept all that matches ipsec policy", ipsec-policy = "in,ipsec" },
+    { disabled = false, action = "drop", chain = "forward", comment = "defconf: drop everything else not coming from LAN", in_interface_list = "!LAN" },
   ]
 }
 
