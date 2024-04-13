@@ -30,7 +30,7 @@ resource "routeros_ip_dhcp_server_network" "ipv4-dhcp-server-network" {
 
   address = "10.0.${each.value.vlan}.0/24"
   gateway = "10.0.${each.value.vlan}.1"
-  dns_server = "10.0.21.2"
+  dns_server = "10.0.21.1"
   ntp_server = "10.0.${each.value.vlan}.1"
   comment = "${each.key}-${each.value.name}"
 }

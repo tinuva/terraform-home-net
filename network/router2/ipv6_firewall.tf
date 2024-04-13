@@ -45,6 +45,7 @@ resource "routeros_ipv6_firewall_filter" "ipv6_rules" {
   dst_port          = each.value.dst_port
   protocol          = each.value.protocol
   ipsec_policy      = each.value.ipsec_policy
+  hop_limit         = each.value.hop_limit
   depends_on    = [routeros_ipv6_firewall_addr_list.firewall_ipv6_address_lists]
 }
 

@@ -30,6 +30,11 @@ module "router" {
   domain             = var.domain
   records_local_only = var.records_local_only
 
+  zone          = var.zone
+  records_a     = var.records_a
+  records_aaaa  = var.records_aaaa
+  records_cname = var.records_cname
+
   ovh = var.ovh
 
   router_bridge_ports         = var.router_bridge_ports
