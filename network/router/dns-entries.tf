@@ -29,7 +29,7 @@ resource "routeros_ip_dns_record" "lanarecord" {
 
   name    = "${each.key}.${var.zone}"
   type    = "A"
-  ttl     = 30
+  ttl     = "30s"
   address = each.value
 }
 
@@ -39,7 +39,7 @@ resource "routeros_dns_record" "lanaaaarecord" {
 
   name    = "${each.key}.${var.zone}"
   type    = "AAAA"
-  ttl     = 30
+  ttl     = "30s"
   address = each.value
 }
 
@@ -49,7 +49,7 @@ resource "routeros_dns_record" "lancnamerecord" {
 
   name    = "${each.key}.${var.zone}"
   type    = "CNAME"
-  ttl     = 30
+  ttl     = "30s"
   cname = "${each.value}.${var.zone}"
 }
 
@@ -59,7 +59,7 @@ resource "routeros_ip_dns_record" "lanhostarecord" {
 
   name    = "${each.key}.${var.zone}"
   type    = "A"
-  ttl     = 30
+  ttl     = "30s"
   address = "10.0.${each.value.vlan}.${each.value.ip_suffix}"
 }
 
@@ -69,6 +69,6 @@ resource "routeros_dns_record" "lanhostaaaarecord" {
 
   name    = "${each.key}.${var.zone}"
   type    = "AAAA"
-  ttl     = 30
+  ttl     = "30s"
   address = "fd00:${each.value.vlan}::7073:a7ff:fe${element(split(":", lower(each.value.mac_addr)), 3)}:${element(split(":", lower(each.value.mac_addr)), 4)}${element(split(":", lower(each.value.mac_addr)), 5)}"
 }
