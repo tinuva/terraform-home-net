@@ -75,69 +75,6 @@ resource "routeros_ip_dhcp_server_lease" "diskstation" {
 }
 
 ### Virtual Servers
-resource "routeros_ip_dhcp_server_lease" "bastion" {
-  #server = routeros_ip_dhcp_server.vlan21-ipv4-dhcp-server.name
-  server = routeros_ip_dhcp_server.ipv4-dhcp-server["vlan21"].name
-  address = "10.0.21.8"
-  mac_address = "BE:AF:7F:80:71:8E"
-  comment = "bastion"
-}
-
-resource "routeros_ip_dhcp_server_lease" "ns1" {
-  #server = routeros_ip_dhcp_server.vlan21-ipv4-dhcp-server.name
-  server = routeros_ip_dhcp_server.ipv4-dhcp-server["vlan21"].name
-  address = "10.0.21.6"
-  mac_address = "62:3A:F1:3B:8F:2B"
-  comment = "ns1"
-}
-
-resource "routeros_ip_dhcp_server_lease" "netm" {
-  #server = routeros_ip_dhcp_server.vlan21-ipv4-dhcp-server.name
-  server = routeros_ip_dhcp_server.ipv4-dhcp-server["vlan21"].name
-  address = "10.0.21.15"
-  mac_address = "5A:2C:7E:E5:8E:A4"
-  comment = "netm"
-# hostname = "netm"
-}
-resource "routeros_ip_dhcp_server_lease" "stax" {
-  #server = routeros_ip_dhcp_server.vlan21-ipv4-dhcp-server.name
-  server = routeros_ip_dhcp_server.ipv4-dhcp-server["vlan21"].name
-  address = "10.0.21.13"
-  mac_address = "A6:6E:87:6D:37:27"
-  comment = "stax"
-# hostname = "stax"
-}
-resource "routeros_ip_dhcp_server_lease" "mail" {
-  #server = routeros_ip_dhcp_server.vlan21-ipv4-dhcp-server.name
-  server = routeros_ip_dhcp_server.ipv4-dhcp-server["vlan21"].name
-  address = "10.0.21.19"
-  mac_address = "1A:5D:DB:9A:BA:5F"
-  comment = "mail"
-}
-resource "routeros_ip_dhcp_server_lease" "cloudbox" {
-  #server = routeros_ip_dhcp_server.vlan21-ipv4-dhcp-server.name
-  server = routeros_ip_dhcp_server.ipv4-dhcp-server["vlan21"].name
-  address = "10.0.21.20"
-  mac_address = "52:AA:A4:13:42:12"
-  comment = "cloudbox"
-# hostname = "cloudbox"
-}
-resource "routeros_ip_dhcp_server_lease" "windows-server" {
-  #server = routeros_ip_dhcp_server.vlan21-ipv4-dhcp-server.name
-  server = routeros_ip_dhcp_server.ipv4-dhcp-server["vlan21"].name
-  address = "10.0.21.21"
-  mac_address = "96:5D:29:33:61:BE"
-  comment = "windows-server"
-# hostname = "WIN-SEAOKHV7CS6"
-}
-resource "routeros_ip_dhcp_server_lease" "deepstack" {
-  #server = routeros_ip_dhcp_server.vlan21-ipv4-dhcp-server.name
-  server = routeros_ip_dhcp_server.ipv4-dhcp-server["vlan21"].name
-  address = "10.0.21.22"
-  mac_address = "6E:71:A9:F1:0D:99"
-  comment = "deepstack"
-# hostname = "deepstack"
-}
 resource "routeros_ip_dhcp_server_lease" "mktxp" {
   #server = routeros_ip_dhcp_server.vlan21-ipv4-dhcp-server.name
   server = routeros_ip_dhcp_server.ipv4-dhcp-server["vlan21"].name

@@ -28,6 +28,7 @@ variable "router_bridge_ports" {}
 variable "bridge_vlans" {}
 
 variable "hosts" {}
+variable "non_host_dns" {}
 
 variable "zone" { }
 variable "records_a" { }
@@ -39,3 +40,5 @@ variable "ipv4_firewall_nat_rules" {}
 variable "ipv4_firewall_address_lists" {}
 variable "ipv6_firewall_filter_rules" {}
 variable "ipv6_firewall_address_lists" {}
+
+variable "wireguard_client_oc" {}

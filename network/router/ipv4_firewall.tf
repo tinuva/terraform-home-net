@@ -33,6 +33,8 @@ resource "routeros_ip_firewall_filter" "rules" {
   disabled          = each.value.disabled
   connection_state  = each.value.connection_state
   connection_nat_state = each.value.connection_nat_state
+  in_interface = each.value.in_interface
+  out_interface = each.value.out_interface
   in_interface_list = each.value.in_interface_list
   out_interface_list = each.value.out_interface_list
   src_address       = each.value.src_address

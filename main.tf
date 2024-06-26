@@ -1,24 +1,28 @@
 module "cloudflare" {
   source = "./dns/cloudflare"
 
-  email   = var.cloudflare_email
-  api_key = var.cloudflare_api_key
-  zone_id = var.cloudflare_zone_id
-  records = var.records
-}
-
-module "powerdns" {
-  source          = "./dns/powerdns"
-  pdns_server_url = var.pdns_server_url
-  pdns_secret     = var.pdns_secret
-
-  zone          = var.zone
+  email         = var.cloudflare_email
+  api_key       = var.cloudflare_api_key
+  zone_id       = var.cloudflare_zone_id
+  records       = var.records
   records_a     = var.records_a
   records_aaaa  = var.records_aaaa
   records_cname = var.records_cname
-
-  hosts = var.hosts
+  hosts         = var.hosts
 }
+
+# module "powerdns" {
+#   source          = "./dns/powerdns"
+#   pdns_server_url = var.pdns_server_url
+#   pdns_secret     = var.pdns_secret
+# 
+#   zone          = var.zone
+#   records_a     = var.records_a
+#   records_aaaa  = var.records_aaaa
+#   records_cname = var.records_cname
+# 
+#   hosts = var.hosts
+# }
 
 module "router" {
   source = "./network/router"
@@ -40,11 +44,14 @@ module "router" {
   router_bridge_ports         = var.router_bridge_ports
   bridge_vlans                = var.bridge_vlans
   hosts                       = var.hosts
+  non_host_dns                = var.non_host_dns
   ipv4_firewall_filter_rules  = var.ipv4_firewall_filter_rules
   ipv4_firewall_nat_rules     = var.ipv4_firewall_nat_rules
   ipv4_firewall_address_lists = var.ipv4_firewall_address_lists
   ipv6_firewall_filter_rules  = var.ipv6_firewall_filter_rules
   ipv6_firewall_address_lists = var.ipv6_firewall_address_lists
+
+  wireguard_client_oc = var.wireguard_client_oc
 }
 
 module "router2" {

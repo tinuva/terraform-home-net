@@ -207,18 +207,18 @@ variable "switch_bridge_ports" {
       tagged_vlans  = []
     }
     "ether20" = {
+      name          = "zigstar"
+      untagged_vlan = 22
+      tagged_vlans  = []
+    }
+    "ether21" = {
       name          = "lte-router"
       untagged_vlan = 11
       tagged_vlans  = []
     }
-    "ether21" = {
-      name          = ""
-      untagged_vlan = 1
-      tagged_vlans  = []
-    }
     "ether22" = {
-      name          = ""
-      untagged_vlan = 1
+      name          = "pethub"
+      untagged_vlan = 22
       tagged_vlans  = []
     }
     "ether23" = {
@@ -277,12 +277,89 @@ variable "bridge_vlans" {
 }
 
 variable "hosts" {
+  type = map(object({
+    mac_addr   = string
+    vlan       = number
+    ip_suffix  = number
+    cf_proxied = optional(bool, true)
+    add_local_dns = optional(bool, false)
+  }))
   description = "Lan hosts config"
   default = {
+    # don't use .5 thats for dns keepalive
     "dev" = {
       mac_addr  = "72:73:A7:53:5A:CE"
       vlan      = 21
-      ip_suffix = 5
+      ip_suffix = 6
+    }
+    "bastion" = {
+      mac_addr   = "BE:AF:7F:80:71:8E"
+      vlan       = 21
+      ip_suffix  = 8
+      cf_proxied = false
+    }
+    "pve-nuc11" = {
+      mac_addr  = "88:ae:dd:01:f9:e7"
+      vlan      = 21
+      ip_suffix = 9
+    }
+    "netm" = {
+      mac_addr  = "BA:DF:A0:82:9C:9A"
+      vlan      = 21
+      ip_suffix = 14
+    }
+    "blue" = {
+      mac_addr = "96:5D:29:33:61:BE"
+      vlan = 21
+      ip_suffix = 21
+    }
+    "logs" = {
+      mac_addr = "C6:AE:05:52:34:42"
+      vlan = 21
+      ip_suffix = 22
+    }
+    "pethub" = {
+      mac_addr = "0A:32:B6:E2:1B:09"
+      vlan = 22
+      ip_suffix = 18
+    }
+    "zigstar" = {
+      mac_addr = "24:DC:C3:C0:73:13"
+      vlan = 22
+      ip_suffix = 20
+      add_local_dns = true
+    }
+    "bluetooth-proxy-01" = {
+      mac_addr = "30:C6:F7:43:FF:7C"
+      vlan = 22
+      ip_suffix = 21
+      add_local_dns = true
+    }
+    "bluetooth-proxy-02" = {
+      mac_addr = "30:C6:F7:42:F2:10"
+      vlan = 22
+      ip_suffix = 22
+      add_local_dns = true
+    }
+    "bluetooth-proxy-03" = {
+      mac_addr = "30:C6:F7:43:03:40"
+      vlan = 22
+      ip_suffix = 23
+      add_local_dns = true
+    }
+  }
+}
+
+variable "non_host_dns" {
+  type = map(object({
+    ip_v4 = string
+    ip_v6 = string
+  }))
+  description = "Lan hosts config"
+  default = {
+    "oracle" = {
+      ip_v4 = "10.49.0.1"
+      ip_v6 = "fd49::1"
     }
   }
 }
@@ -293,6 +370,8 @@ variable "ipv4_firewall_filter_rules" {
     action               = string
     connection_state     = optional(string)
     connection_nat_state = optional(string)
+    in_interface         = optional(string)
+    out_interface        = optional(string)
     in_interface_list    = optional(string)
     out_interface_list   = optional(string)
     src_address          = optional(string)
@@ -314,12 +393,58 @@ variable "ipv4_firewall_filter_rules" {
     { disabled = false, chain = "input", action = "drop", comment = "defconf: drop invalid", connection_state = "invalid" },
     { disabled = false, chain = "input", action = "accept", comment = "defconf: accept ICMP from list", protocol = "icmp", src_address_list = "icmp-allowed" },
     { disabled = false, chain = "input", action = "accept", comment = "wireguard: david", protocol = "udp", dst_port = "13231" },
+    { disabled = false, chain = "input", action = "accept", comment = "wireguard: oracle", protocol = "udp", dst_port = "51820" },
+    # ORACLE VPS WIREGUARD VPN
+    { disabled = false, chain = "input", action = "accept", comment = "Oracle WG VPN", in_interface = "wireguard-oracle-instance1" },
     { disabled = false, chain = "input", action = "drop", comment = "defconf: drop all not coming from LAN", in_interface_list = "!LAN" },
-    { disabled = false, chain = "forward", action = "accept", comment = "defconf: accept in ipsec policy", ipsec_policy = "in,ipsec" },
-    { disabled = false, chain = "forward", action = "accept", comment = "defconf: accept out ipsec policy", ipsec_policy = "out,ipsec" },
+
     { disabled = false, chain = "forward", action = "fasttrack-connection", comment = "defconf: fasttrack", connection_state = "established,related", hw_offload = true },
     { disabled = false, chain = "forward", action = "accept", comment = "defconf: accept established,related, untracked", connection_state = "established,related,untracked" },
+    { disabled = false, action = "accept", chain = "forward", comment = "defconf: accept icmp coming from LAN", in_interface_list = "LAN", protocol = "icmp" },
+
+    # VLAN22-IOT
+    ## GoodWe Inverter
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot goodwe", in_interface = "vlan22-iot", src_address = "10.0.22.10" },
+    ## Home Assistant
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot HomeAssistant", in_interface = "vlan22-iot", src_address = "10.0.22.9", dst_address = "10.0.0.0/23" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot HomeAssistant", in_interface = "vlan22-iot", src_address = "10.0.22.9", out_interface_list = "!LAN", protocol = "tcp", dst_port = "22" },
+    ## Bamblulab Printer
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "tcp", dst_port = "8080" },             # http api
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "tcp", dst_port = "8883" },             # mqtt
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "tcp", dst_port = "8000,21047,10001" }, # video
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "udp", dst_port = "10001-10512" },      # video
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "tcp", dst_port = "3000" },             # device binding
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "tcp", dst_port = "123" },              # NTP
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "udp", dst_port = "123" },              # NTP
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "udp", dst_port = "1900" },             # SSDP
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "udp", dst_port = "1990" },             # SSDP
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "udp", dst_port = "2021" },             # SSDP
+    ## VLAN22 Global Rules 
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept dns", in_interface = "vlan22-iot", protocol = "udp", dst_port = "53" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept logs", in_interface = "vlan22-iot", protocol = "tcp", dst_port = "5514" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept logs", in_interface = "vlan22-iot", protocol = "udp", dst_port = "5514" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept http", in_interface = "vlan22-iot", out_interface_list = "!LAN", protocol = "tcp", dst_port = "80" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept 81", in_interface = "vlan22-iot", protocol = "tcp", dst_port = "81" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept https", in_interface = "vlan22-iot", protocol = "tcp", dst_port = "443" },
+    { disabled = false, chain = "forward", action = "drop", comment = "vlan22-iot drop all", in_interface = "vlan22-iot" },
+
+    # VLAN23-IOT2
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan23-iot accept dns", in_interface = "vlan23-iot2-lan-only", protocol = "udp", dst_port = "53" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan23-iot accept http", in_interface = "vlan23-iot2-lan-only", out_interface_list = "!LAN", protocol = "tcp", dst_port = "80" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan23-iot accept https", in_interface = "vlan23-iot2-lan-only", out_interface_list = "!LAN", protocol = "tcp", dst_port = "443" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan23-iot accept udp", in_interface = "vlan23-iot2-lan-only", out_interface_list = "!LAN", protocol = "udp" },
+    { disabled = false, chain = "forward", action = "drop", comment = "vlan23-iot drop all", in_interface = "vlan23-iot2-lan-only" },
+
+    # IPSEC
+    #{ disabled = true, chain = "forward", action = "accept", comment = "defconf: accept in ipsec policy", ipsec_policy = "in,ipsec" },
+    #{ disabled = true, chain = "forward", action = "accept", comment = "defconf: accept out ipsec policy", ipsec_policy = "out,ipsec" },
+
+    # ORACLE VPS WIREGUARD VPN
+    { disabled = false, chain = "forward", action = "accept", comment = "Oracle WG VPN", in_interface = "wireguard-oracle-instance1" },
+
+    # DROP INVALID
     { disabled = false, chain = "forward", action = "drop", comment = "defconf: drop invalid", connection_state = "invalid" },
+    # DROP ALL (except wan forwarded)
     { disabled = false, chain = "forward", action = "drop", comment = "defconf: drop all from WAN not DSTNATed", connection_state = "new", connection_nat_state = "!dstnat", in_interface_list = "WAN" },
   ]
 }
@@ -419,14 +544,17 @@ variable "ipv6_firewall_filter_rules" {
     { disabled = false, action = "accept", chain = "input", comment = "defconf: accept established,related,untracked", connection_state = "established,related,untracked" },
     { disabled = false, action = "drop", chain = "input", comment = "defconf: drop invalid", connection_state = "invalid" },
     { disabled = false, action = "accept", chain = "input", comment = "defconf: accept ICMPv6", protocol = "icmpv6" },
-    { disabled = false, action = "accept", chain = "input", comment = "defconf: accept UDP traceroute", port = "33434-33534", protocol = "udp" },
+    { disabled = false, action = "accept", chain = "input", comment = "defconf: accept UDP traceroute", dst_port = "33434-33534", protocol = "udp" },
     { disabled = false, action = "accept", chain = "input", comment = "defconf: accept DHCPv6-Client prefix delegation", dst_port = "546", protocol = "udp", src-address = "fe80::/10" },
     { disabled = false, action = "accept", chain = "input", comment = "defconf: accept IKE", dst_port = "500,4500", protocol = "udp" },
     { disabled = false, action = "accept", chain = "input", comment = "defconf: accept ipsec AH", protocol = "ipsec-ah" },
     { disabled = false, action = "accept", chain = "input", comment = "defconf: accept ipsec ESP", protocol = "ipsec-esp" },
     { disabled = false, action = "accept", chain = "input", comment = "defconf: accept all that matches ipsec policy", ipsec_policy = "in,ipsec" },
     { disabled = false, action = "accept", chain = "input", comment = "accept: dhcpv6", protocol = "udp", dst_port = "546", in_interface = "all-ppp" },
+    # ORACLE VPS WIREGUARD VPN
+    { disabled = false, chain = "input", action = "accept", comment = "Oracle WG VPN", in_interface = "wireguard-oracle-instance1" },
     { disabled = false, action = "drop", chain = "input", comment = "defconf: drop everything else not coming from LAN", in_interface_list = "!LAN" },
+
     # forward chain
     { disabled = false, action = "accept", chain = "forward", comment = "defconf: accept established,related,untracked", connection_state = "established,related,untracked" },
     { disabled = false, action = "drop", chain = "forward", comment = "defconf: drop invalid", connection_state = "invalid" },
@@ -434,15 +562,47 @@ variable "ipv6_firewall_filter_rules" {
     { disabled = false, action = "drop", chain = "forward", comment = "defconf: drop packets with bad dst ipv6", dst_address_list = "bad-ipv6" },
     { disabled = true, action = "drop", chain = "forward", comment = "defconf: rfc4890 fd00:: drop hop-limit=1", hop_limit = "equal:1", protocol = "icmpv6" },
     { disabled = false, action = "accept", chain = "forward", comment = "defconf: accept ICMPv6", protocol = "icmpv6" },
-    { disabled = false, action = "accept", chain = "forward", comment = "defconf: accept HIP", protocol = "139" },
-    { disabled = false, action = "accept", chain = "forward", comment = "defconf: accept IKE", dst_port = "500,4500", protocol = "udp" },
-    { disabled = false, action = "accept", chain = "forward", comment = "defconf: accept ipsec AH", protocol = "ipsec-ah" },
-    { disabled = false, action = "accept", chain = "forward", comment = "defconf: accept ipsec ESP", protocol = "ipsec-esp" },
-    { disabled = false, action = "accept", chain = "forward", comment = "defconf: accept all that matches ipsec policy", ipsec_policy = "in,ipsec" },
+    #{ disabled = false, action = "accept", chain = "forward", comment = "defconf: accept HIP", protocol = "139" },
+    #{ disabled = false, action = "accept", chain = "forward", comment = "defconf: accept IKE", dst_port = "500,4500", protocol = "udp" },
+    #{ disabled = false, action = "accept", chain = "forward", comment = "defconf: accept ipsec AH", protocol = "ipsec-ah" },
+    #{ disabled = false, action = "accept", chain = "forward", comment = "defconf: accept ipsec ESP", protocol = "ipsec-esp" },
+    #{ disabled = false, action = "accept", chain = "forward", comment = "defconf: accept all that matches ipsec policy", ipsec_policy = "in,ipsec" },
+
+    # VLAN22-IOT
+    ## Home Assistant
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot HomeAssistant", in_interface = "vlan22-iot", src_address = "fd00:22::55eb:868:3649:e84e", out_interface_list = "!LAN", protocol = "tcp", dst_port = "22" },
+    # global v22 rules
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept dns", in_interface = "vlan22-iot", protocol = "udp", dst_port = "53" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept logs", in_interface = "vlan22-iot", protocol = "tcp", dst_port = "5514" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept logs", in_interface = "vlan22-iot", protocol = "udp", dst_port = "5514" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept http", in_interface = "vlan22-iot", out_interface_list = "!LAN", protocol = "tcp", dst_port = "80" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept 81", in_interface = "vlan22-iot", protocol = "tcp", dst_port = "81" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept https", in_interface = "vlan22-iot", protocol = "tcp", dst_port = "443" },
+    { disabled = false, chain = "forward", action = "drop", comment = "vlan22-iot drop all", in_interface = "vlan22-iot" },
+
+    # VLAN23-IOT2
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan23-iot accept dns", in_interface = "vlan23-iot2-lan-only", protocol = "udp", dst_port = "53" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan23-iot accept http", in_interface = "vlan23-iot2-lan-only", out_interface_list = "!LAN", protocol = "tcp", dst_port = "80" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan23-iot accept https", in_interface = "vlan23-iot2-lan-only", out_interface_list = "!LAN", protocol = "tcp", dst_port = "443" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan23-iot accept udp", in_interface = "vlan23-iot2-lan-only", out_interface_list = "!LAN", protocol = "udp" },
+    { disabled = false, chain = "forward", action = "drop", comment = "vlan23-iot drop all", in_interface = "vlan23-iot2-lan-only" },
+
+    # Default IPv6 allow 80/443 to vlan21 servers 
+    { disabled = false, chain = "forward", action = "accept", comment = "WAN to VLAN21-servers accept http", out_interface = "vlan21-servers", protocol = "tcp", dst_port = "80" },
+    { disabled = false, chain = "forward", action = "accept", comment = "WAN to VLAN21-servers accept https", out_interface = "vlan21-servers", protocol = "tcp", dst_port = "443" },
+    # SSH BASTION 
+    { disabled = false, chain = "forward", action = "accept", comment = "WAN to bastion accept ssh", out_interface = "vlan21-servers", protocol = "tcp", dst_port = "22", dst_address = "fd00:21::bcaf:7fff:fe80:718e/128" },
+    { disabled = false, chain = "forward", action = "accept", comment = "WAN to bastion accept ssh", out_interface = "vlan21-servers", protocol = "tcp", dst_port = "22", dst_address = "2c0f:f2a0:2058:5:bcaf:7fff:fe80:718e/128" },
+    # ORACLE VPS WIREGUARD VPN
+    { disabled = false, chain = "forward", action = "accept", comment = "Oracle WG VPN", in_interface = "wireguard-oracle-instance1" },
+
+    # DROP ALL not from LAN
     { disabled = false, action = "drop", chain = "forward", comment = "defconf: drop everything else not coming from LAN", in_interface_list = "!LAN" },
   ]
 }
 
+
+variable "wireguard_client_oc" {}
 
 variable "adguard_host" {}
 variable "adguard_user" {}
@@ -472,7 +632,53 @@ variable "records_local_only_adguard" {}
 variable "zone" {}
 variable "records_a" {}
 variable "records_aaaa" {}
-variable "records_cname" {}
+
+
+variable "records_cname" {
+  type = map(object({
+    host       = string
+    cf_enabled = optional(bool, true)
+  }))
+  default = {
+    "pdns"          = { host = "ns1" }
+    "pdns-admin"    = { host = "ns1" }
+    "adguardhome"   = { host = "netm" }
+    "unifi"         = { host = "netm" }
+    "bi"            = { host = "bastion" }
+    "comms"         = { host = "netm" }
+    "grafana"       = { host = "haa" }
+    "ha"            = { host = "bastion" }
+    "alarmserver"   = { host = "stax" }
+    "envisalink"    = { host = "bastion" }
+    "mktxp-grafana" = { host = "stax" }
+    "netmon"        = { host = "netm" }
+    "router"        = { host = "bastion" }
+    "switch"        = { host = "bastion" }
+    "tasmoadmin"    = { host = "haa" }
+    "tasmobackup"   = { host = "haa" }
+    "traefik"       = { host = "bastion" }
+    "uptime-remote" = { host = "oracle" }
+    "uptime"        = { host = "netm" }
+    "w"             = { host = "bastion" }
+    "zigbee2mqtt"   = { host = "haa" }
+    "zha"           = { host = "stax" }
+    "sonarr"        = { host = "saltbox", cf_enabled = false }
+    "radarr"        = { host = "saltbox", cf_enabled = false }
+    "ombi"          = { host = "saltbox", cf_enabled = false }
+    "organizr"      = { host = "saltbox", cf_enabled = false }
+    "nzbget"        = { host = "saltbox", cf_enabled = false }
+    "rutorrent"     = { host = "saltbox", cf_enabled = false }
+    "portainer"     = { host = "saltbox", cf_enabled = false }
+    "jackett"       = { host = "saltbox", cf_enabled = false }
+    "nzbhydra2"     = { host = "saltbox", cf_enabled = false }
+    "plexpy"        = { host = "saltbox", cf_enabled = false }
+    "plex"          = { host = "saltbox", cf_enabled = false }
+    "lidarr"        = { host = "saltbox", cf_enabled = false }
+    "login"         = { host = "saltbox", cf_enabled = false }
+    "autoscan"      = { host = "saltbox", cf_enabled = false }
+    "emqx"          = { host = "haa" }
+  }
+}
 
 variable "pdns_server_url" {}
 variable "pdns_secret" {}

@@ -9,3 +9,8 @@ variable "records" {
         "host3" = "192.168.88.83"
     }
 }
+
+variable "records_a" { }
+variable "records_aaaa" { }
+variable "records_cname" { }
+variable "hosts" {}
