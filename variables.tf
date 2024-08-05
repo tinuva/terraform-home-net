@@ -329,23 +329,28 @@ variable "hosts" {
       ip_suffix = 20
       add_local_dns = true
     }
-    "bluetooth-proxy-01" = {
+    "bluetooth-proxy-mainbedroom" = {
       mac_addr = "30:C6:F7:43:FF:7C"
       vlan = 22
       ip_suffix = 21
       add_local_dns = true
     }
-    "bluetooth-proxy-02" = {
+    "bluetooth-proxy-braairoom" = {
       mac_addr = "30:C6:F7:42:F2:10"
       vlan = 22
       ip_suffix = 22
       add_local_dns = true
     }
-    "bluetooth-proxy-03" = {
+    "bluetooth-proxy-kitchen" = {
       mac_addr = "30:C6:F7:43:03:40"
       vlan = 22
       ip_suffix = 23
       add_local_dns = true
+    }
+    "wpsd" = {
+      mac_addr = "2C:CF:67:21:47:A6"
+      vlan = 22
+      ip_suffix = 24
     }
   }
 }
@@ -405,6 +410,8 @@ variable "ipv4_firewall_filter_rules" {
     # VLAN22-IOT
     ## GoodWe Inverter
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot goodwe", in_interface = "vlan22-iot", src_address = "10.0.22.10" },
+    ## wpsd
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot wpsd", in_interface = "vlan22-iot", src_address = "10.0.22.24" },
     ## Home Assistant
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot HomeAssistant", in_interface = "vlan22-iot", src_address = "10.0.22.9", dst_address = "10.0.0.0/23" },
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot HomeAssistant", in_interface = "vlan22-iot", src_address = "10.0.22.9", out_interface_list = "!LAN", protocol = "tcp", dst_port = "22" },
@@ -423,9 +430,7 @@ variable "ipv4_firewall_filter_rules" {
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept dns", in_interface = "vlan22-iot", protocol = "udp", dst_port = "53" },
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept logs", in_interface = "vlan22-iot", protocol = "tcp", dst_port = "5514" },
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept logs", in_interface = "vlan22-iot", protocol = "udp", dst_port = "5514" },
-    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept http", in_interface = "vlan22-iot", out_interface_list = "!LAN", protocol = "tcp", dst_port = "80" },
-    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept 81", in_interface = "vlan22-iot", protocol = "tcp", dst_port = "81" },
-    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept https", in_interface = "vlan22-iot", protocol = "tcp", dst_port = "443" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept NOT_LAN", in_interface = "vlan22-iot", out_interface_list = "!LAN" },
     { disabled = false, chain = "forward", action = "drop", comment = "vlan22-iot drop all", in_interface = "vlan22-iot" },
 
     # VLAN23-IOT2
@@ -570,14 +575,12 @@ variable "ipv6_firewall_filter_rules" {
 
     # VLAN22-IOT
     ## Home Assistant
-    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot HomeAssistant", in_interface = "vlan22-iot", src_address = "fd00:22::55eb:868:3649:e84e", out_interface_list = "!LAN", protocol = "tcp", dst_port = "22" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot HomeAssistant", in_interface = "vlan22-iot", src_address = "fd00:22::55eb:868:3649:e84e/128", out_interface_list = "!LAN", protocol = "tcp", dst_port = "22" },
     # global v22 rules
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept dns", in_interface = "vlan22-iot", protocol = "udp", dst_port = "53" },
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept logs", in_interface = "vlan22-iot", protocol = "tcp", dst_port = "5514" },
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept logs", in_interface = "vlan22-iot", protocol = "udp", dst_port = "5514" },
-    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept http", in_interface = "vlan22-iot", out_interface_list = "!LAN", protocol = "tcp", dst_port = "80" },
-    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept 81", in_interface = "vlan22-iot", protocol = "tcp", dst_port = "81" },
-    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept https", in_interface = "vlan22-iot", protocol = "tcp", dst_port = "443" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept NOT_LAN", in_interface = "vlan22-iot", out_interface_list = "!LAN" },
     { disabled = false, chain = "forward", action = "drop", comment = "vlan22-iot drop all", in_interface = "vlan22-iot" },
 
     # VLAN23-IOT2
@@ -677,6 +680,7 @@ variable "records_cname" {
     "login"         = { host = "saltbox", cf_enabled = false }
     "autoscan"      = { host = "saltbox", cf_enabled = false }
     "emqx"          = { host = "haa" }
+    "esphome"        = { host = "haa" }
   }
 }
 
