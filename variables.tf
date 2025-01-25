@@ -192,8 +192,8 @@ variable "switch_bridge_ports" {
       tagged_vlans  = [20, 22, 23]
     }
     "ether17" = {
-      name          = ""
-      untagged_vlan = 1
+      name          = "google-coral"
+      untagged_vlan = 21
       tagged_vlans  = []
     }
     "ether18" = {
@@ -287,6 +287,11 @@ variable "hosts" {
   description = "Lan hosts config"
   default = {
     # don't use .5 thats for dns keepalive
+    "af1515" = {
+      mac_addr  = "00:00:74:A7:F5:3C"
+      vlan      = 20
+      ip_suffix = 8
+    }
     "dev" = {
       mac_addr  = "72:73:A7:53:5A:CE"
       vlan      = 21
@@ -317,6 +322,11 @@ variable "hosts" {
       mac_addr = "C6:AE:05:52:34:42"
       vlan = 21
       ip_suffix = 22
+    }
+    "coral" = {
+      mac_addr  = "7C:D9:5C:B2:C3:02"
+      vlan      = 21
+      ip_suffix = 25
     }
     "pethub" = {
       mac_addr = "0A:32:B6:E2:1B:09"
@@ -415,21 +425,23 @@ variable "ipv4_firewall_filter_rules" {
     ## Home Assistant
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot HomeAssistant", in_interface = "vlan22-iot", src_address = "10.0.22.9", dst_address = "10.0.0.0/23" },
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot HomeAssistant", in_interface = "vlan22-iot", src_address = "10.0.22.9", out_interface_list = "!LAN", protocol = "tcp", dst_port = "22" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot HomeAssistant", in_interface = "vlan22-iot", src_address = "10.0.22.9", out_interface = "vlan21-servers", protocol = "tcp", dst_port = "443" },   # allow home assistnt to access 443 on server vlan, eg. unifi
     ## Bamblulab Printer
-    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "tcp", dst_port = "8080" },             # http api
-    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "tcp", dst_port = "8883" },             # mqtt
-    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "tcp", dst_port = "8000,21047,10001" }, # video
-    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "udp", dst_port = "10001-10512" },      # video
-    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "tcp", dst_port = "3000" },             # device binding
+    # { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "tcp", dst_port = "8080" },             # http api
+    # { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "tcp", dst_port = "8883" },             # mqtt
+    # { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "tcp", dst_port = "8000,21047,10001" }, # video
+    # { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "udp", dst_port = "10001-10512" },      # video
+    # { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "tcp", dst_port = "3000" },             # device binding
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "tcp", dst_port = "123" },              # NTP
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "udp", dst_port = "123" },              # NTP
-    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "udp", dst_port = "1900" },             # SSDP
-    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "udp", dst_port = "1990" },             # SSDP
-    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "udp", dst_port = "2021" },             # SSDP
+    # { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "udp", dst_port = "1900" },             # SSDP
+    # { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "udp", dst_port = "1990" },             # SSDP
+    # { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", protocol = "udp", dst_port = "2021" },             # SSDP
     ## VLAN22 Global Rules 
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept dns", in_interface = "vlan22-iot", protocol = "udp", dst_port = "53" },
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept logs", in_interface = "vlan22-iot", protocol = "tcp", dst_port = "5514" },
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept logs", in_interface = "vlan22-iot", protocol = "udp", dst_port = "5514" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept logs", in_interface = "vlan22-iot", protocol = "tcp", dst_port = "443", dst_address = "10.0.21.22" },
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept NOT_LAN", in_interface = "vlan22-iot", out_interface_list = "!LAN" },
     { disabled = false, chain = "forward", action = "drop", comment = "vlan22-iot drop all", in_interface = "vlan22-iot" },
 
@@ -441,7 +453,7 @@ variable "ipv4_firewall_filter_rules" {
     { disabled = false, chain = "forward", action = "drop", comment = "vlan23-iot drop all", in_interface = "vlan23-iot2-lan-only" },
 
     # IPSEC
-    #{ disabled = true, chain = "forward", action = "accept", comment = "defconf: accept in ipsec policy", ipsec_policy = "in,ipsec" },
+    #{ disabled = true, chain = "forward", action = "accept", comment = "defconf: accept in ipsec policy", ipsec_poli8cy = "in,ipsec" },
     #{ disabled = true, chain = "forward", action = "accept", comment = "defconf: accept out ipsec policy", ipsec_policy = "out,ipsec" },
 
     # ORACLE VPS WIREGUARD VPN
@@ -493,6 +505,7 @@ variable "ipv4_firewall_address_lists" {
     "ssh-allowed" = [
       "105.27.196.102",
       "105.27.196.114",
+      "105.22.73.130",
       "15.244.0.0/14",
       "15.248.0.0/16",
       "54.240.197.224/28",
@@ -576,10 +589,13 @@ variable "ipv6_firewall_filter_rules" {
     # VLAN22-IOT
     ## Home Assistant
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot HomeAssistant", in_interface = "vlan22-iot", src_address = "fd00:22::55eb:868:3649:e84e/128", out_interface_list = "!LAN", protocol = "tcp", dst_port = "22" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot HomeAssistant", in_interface = "vlan22-iot", src_address = "fd00:22::55eb:868:3649:e84e/128", out_interface = "vlan21-servers", protocol = "tcp", dst_port = "443" },   # allow home assistnt to access 443 on server vlan, eg. unifi
+
     # global v22 rules
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept dns", in_interface = "vlan22-iot", protocol = "udp", dst_port = "53" },
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept logs", in_interface = "vlan22-iot", protocol = "tcp", dst_port = "5514" },
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept logs", in_interface = "vlan22-iot", protocol = "udp", dst_port = "5514" },
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept logs", in_interface = "vlan22-iot", protocol = "tcp", dst_port = "443", dst_address = "fd00:21::c4ae:5ff:fe52:3442/128" },
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept NOT_LAN", in_interface = "vlan22-iot", out_interface_list = "!LAN" },
     { disabled = false, chain = "forward", action = "drop", comment = "vlan22-iot drop all", in_interface = "vlan22-iot" },
 
@@ -654,6 +670,7 @@ variable "records_cname" {
     "alarmserver"   = { host = "stax" }
     "envisalink"    = { host = "bastion" }
     "mktxp-grafana" = { host = "stax" }
+    "mqtt-explorer" = { host = "haa" }
     "netmon"        = { host = "netm" }
     "router"        = { host = "bastion" }
     "switch"        = { host = "bastion" }
@@ -664,6 +681,7 @@ variable "records_cname" {
     "uptime"        = { host = "netm" }
     "w"             = { host = "bastion" }
     "zigbee2mqtt"   = { host = "haa" }
+    "spoolman"      = { host = "haa" }
     "zha"           = { host = "stax" }
     "sonarr"        = { host = "saltbox", cf_enabled = false }
     "radarr"        = { host = "saltbox", cf_enabled = false }
