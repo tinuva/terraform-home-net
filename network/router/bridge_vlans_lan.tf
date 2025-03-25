@@ -8,7 +8,7 @@ resource "routeros_interface_bridge_vlan" "bridge_vlan" {
       key => val if val.is_enabled
   }
 
-  vlan_ids = each.value.vlan
+  vlan_ids = [each.value.vlan]
   bridge    = routeros_interface_bridge.bridge.name
   untagged  = [for port, detail in var.router_bridge_ports: port if detail.untagged_vlan == each.value.vlan ]
   tagged    = concat(["bridge"], [for port, detail in var.router_bridge_ports: port if contains(detail.tagged_vlans, each.value.vlan) ])
@@ -22,12 +22,12 @@ resource "routeros_interface_list_member" "lan-vlan" {
       key => val if val.is_enabled
   }
 
-  interface = routeros_vlan.vlan[each.key].name
+  interface = routeros_interface_vlan.vlan[each.key].name
   list      = routeros_interface_list.lan.name
 }
 
 # create layer3 vlan interface. to add ip addresses to
-resource "routeros_vlan" "vlan" {
+resource "routeros_interface_vlan" "vlan" {
   for_each = {
     for key, val in var.bridge_vlans :
       key => val if val.is_enabled

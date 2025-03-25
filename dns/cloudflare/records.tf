@@ -5,8 +5,9 @@ resource "cloudflare_record" "lanhostrecord" {
   zone_id  = var.zone_id
   name    = each.key
   type    = "CNAME"
-  value   = "heaven.za.net"
+  content   = "heaven.za.net"
   proxied = each.value.cf_proxied
+  ttl = 1
 }
 
 # resource "cloudflare_record" "records" {
@@ -14,9 +15,10 @@ resource "cloudflare_record" "lanhostrecord" {
 # 
 #   zone_id  = var.zone_id
 #   name    = each.key
-#   value   = "heaven.za.net"
+#   content   = "heaven.za.net"
 #   type    = "CNAME"
 #   proxied = true
+#   ttl = 1
 # }
 
 resource "cloudflare_record" "cname_records" {
@@ -25,23 +27,26 @@ resource "cloudflare_record" "cname_records" {
 
   zone_id  = var.zone_id
   name    = each.key
-  value   = "heaven.za.net"
+  content   = "heaven.za.net"
   type    = "CNAME"
   proxied = true
+  ttl = 1
 }
 
 # resource "cloudflare_record" "bastion" {
 #   zone_id  = var.zone_id
 #   name    = "bastion"
-#   value   = "heaven.za.net"
+#   content   = "heaven.za.net"
 #   type    = "CNAME"
 #   proxied = false
+#  ttl = 1
 # }
 
 resource "cloudflare_record" "teamspeak3" {
   zone_id  = var.zone_id
   name    = "teamspeak3"
-  value   = "41.185.26.102"
+  content   = "41.185.26.102"
   type    = "A"
   proxied = false
+  ttl = 1
 }

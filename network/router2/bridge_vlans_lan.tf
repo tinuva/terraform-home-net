@@ -35,6 +35,6 @@ resource "routeros_vlan" "vlan" {
 
   interface = routeros_interface_bridge.bridge.name
   name = "${each.key}-${each.value.name}"
-  vlan_id = each.value.vlan
+  vlan_id = "${each.value.vlan}"
   comment = "${each.key}-${each.value.name}"
 }

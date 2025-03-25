@@ -5,7 +5,7 @@ resource "routeros_ip_address" "vlan-ipv4" {
       key => val if val.is_enabled
   }
 
-  interface = routeros_vlan.vlan[each.key].name
+  interface = routeros_interface_vlan.vlan[each.key].name
   address = "10.0.${each.value.vlan}.1/24"
   comment = "${each.key}-${each.value.name}"
 }
@@ -30,8 +30,8 @@ resource "routeros_ip_dhcp_server_network" "ipv4-dhcp-server-network" {
 
   address = "10.0.${each.value.vlan}.0/24"
   gateway = "10.0.${each.value.vlan}.1"
-  dns_server = "10.0.21.5"
-  ntp_server = "10.0.${each.value.vlan}.1"
+  dns_server = ["10.0.21.5"]
+  ntp_server = ["10.0.${each.value.vlan}.1"]
   comment = "${each.key}-${each.value.name}"
 }
 
@@ -43,7 +43,7 @@ resource "routeros_ip_dhcp_server" "ipv4-dhcp-server" {
   }
 
   name = "${each.key}-${each.value.name}"
-  interface = routeros_vlan.vlan[each.key].name
+  interface = routeros_interface_vlan.vlan[each.key].name
   address_pool = routeros_ip_pool.ipv4-pool[each.key].name
   lease_time = "2d"
 }

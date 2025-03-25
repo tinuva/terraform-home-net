@@ -1,6 +1,6 @@
 
 resource "routeros_interface_vrrp" "interface_vrrp" {
-  interface = routeros_vlan.vlan["vlan21"].name # depend on interface we on
+  interface = routeros_interface_vlan.vlan["vlan21"].name # depend on interface we on
   name      = "vrrp_dns"
   priority = "100"
   version = "2"

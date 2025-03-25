@@ -52,7 +52,7 @@ resource "routeros_dns_record" "lancnamerecord" {
   name    = "${each.key}.${var.zone}"
   type    = "CNAME"
   ttl     = "30s"
-  cname = "${each.value.host}.${var.zone}"
+  cname = "${each.value.host}.${var.domain}"
 }
 
 # Add A records to the zone for hosts

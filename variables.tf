@@ -328,6 +328,16 @@ variable "hosts" {
       vlan      = 21
       ip_suffix = 25
     }
+    "ai" = {
+      mac_addr  = "F6:12:53:C5:57:B5"
+      vlan      = 21
+      ip_suffix = 26
+    }
+    "projects" = {
+      mac_addr  = "32:70:E6:E5:F0:36"
+      vlan      = 21
+      ip_suffix = 27
+    }
     "pethub" = {
       mac_addr = "0A:32:B6:E2:1B:09"
       vlan = 22
@@ -426,6 +436,7 @@ variable "ipv4_firewall_filter_rules" {
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot HomeAssistant", in_interface = "vlan22-iot", src_address = "10.0.22.9", dst_address = "10.0.0.0/23" },
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot HomeAssistant", in_interface = "vlan22-iot", src_address = "10.0.22.9", out_interface_list = "!LAN", protocol = "tcp", dst_port = "22" },
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot HomeAssistant", in_interface = "vlan22-iot", src_address = "10.0.22.9", out_interface = "vlan21-servers", protocol = "tcp", dst_port = "443" },   # allow home assistnt to access 443 on server vlan, eg. unifi
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot HomeAssistant", in_interface = "vlan22-iot", src_address = "10.0.22.9", out_interface = "vlan21-servers", protocol = "tcp", dst_port = "4000" },   # allow home assistnt to access llm proxy
     ## Bamblulab Printer
     # { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "tcp", dst_port = "8080" },             # http api
     # { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "tcp", dst_port = "8883" },             # mqtt
@@ -590,6 +601,7 @@ variable "ipv6_firewall_filter_rules" {
     ## Home Assistant
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot HomeAssistant", in_interface = "vlan22-iot", src_address = "fd00:22::55eb:868:3649:e84e/128", out_interface_list = "!LAN", protocol = "tcp", dst_port = "22" },
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot HomeAssistant", in_interface = "vlan22-iot", src_address = "fd00:22::55eb:868:3649:e84e/128", out_interface = "vlan21-servers", protocol = "tcp", dst_port = "443" },   # allow home assistnt to access 443 on server vlan, eg. unifi
+    { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot HomeAssistant", in_interface = "vlan22-iot", src_address = "fd00:22::55eb:868:3649:e84e/128", out_interface = "vlan21-servers", protocol = "tcp", dst_port = "4000" },   # allow home assistnt to access llm proxy
 
     # global v22 rules
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept dns", in_interface = "vlan22-iot", protocol = "udp", dst_port = "53" },
@@ -664,11 +676,18 @@ variable "records_cname" {
     "adguardhome"   = { host = "netm" }
     "unifi"         = { host = "netm" }
     "bi"            = { host = "bastion" }
+    "semaphore"     = { host = "bastion" }
     "comms"         = { host = "netm" }
     "grafana"       = { host = "haa" }
     "ha"            = { host = "bastion" }
     "alarmserver"   = { host = "stax" }
     "envisalink"    = { host = "bastion" }
+    "litellm"       = { host = "ai", cf_enabled = true }
+    "openwebui"     = { host = "ai" }
+    "librechat"      = { host = "ai" }
+    "lobechat"      = { host = "ai" }
+    "huly"          = { host = "projects" }
+    "worklenz"      = { host = "projects" }
     "mktxp-grafana" = { host = "stax" }
     "mqtt-explorer" = { host = "haa" }
     "netmon"        = { host = "netm" }
@@ -694,6 +713,7 @@ variable "records_cname" {
     "nzbhydra2"     = { host = "saltbox", cf_enabled = false }
     "plexpy"        = { host = "saltbox", cf_enabled = false }
     "plex"          = { host = "saltbox", cf_enabled = false }
+    "jellyfin"      = { host = "saltbox", cf_enabled = false }
     "lidarr"        = { host = "saltbox", cf_enabled = false }
     "login"         = { host = "saltbox", cf_enabled = false }
     "autoscan"      = { host = "saltbox", cf_enabled = false }

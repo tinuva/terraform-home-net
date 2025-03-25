@@ -5,7 +5,7 @@ resource "routeros_ipv6_address" "vlan-ipv6-public" {
       key => val if val.is_enabled
   }
 
-  interface = routeros_vlan.vlan[each.key].name
+  interface = routeros_interface_vlan.vlan[each.key].name
   from_pool = "ipv6-pool"
   comment = "${each.key}-${each.value.name}"
   advertise = true
@@ -18,7 +18,7 @@ resource "routeros_ipv6_address" "vlan-ipv6-private" {
       key => val if val.is_enabled
   }
 
-  interface = routeros_vlan.vlan[each.key].name
+  interface = routeros_interface_vlan.vlan[each.key].name
   address = "fd00:${each.value.vlan}::/64"
   comment = "${each.key}-${each.value.name}"
   advertise = true
