@@ -1,5 +1,5 @@
 # Add A records to the zone for hosts
-resource "cloudflare_record" "lanhostrecord" {
+resource "cloudflare_dns_record" "lanhostrecord" {
   for_each = var.hosts
 
   zone_id  = var.zone_id
@@ -21,7 +21,7 @@ resource "cloudflare_record" "lanhostrecord" {
 #   ttl = 1
 # }
 
-resource "cloudflare_record" "cname_records" {
+resource "cloudflare_dns_record" "cname_records" {
   #for_each = var.records_cname
   for_each = { for key, value in var.records_cname : key => value if value.cf_enabled }
 
@@ -42,7 +42,7 @@ resource "cloudflare_record" "cname_records" {
 #  ttl = 1
 # }
 
-resource "cloudflare_record" "teamspeak3" {
+resource "cloudflare_dns_record" "teamspeak3" {
   zone_id  = var.zone_id
   name    = "teamspeak3"
   content   = "41.185.26.102"
