@@ -308,6 +308,17 @@ variable "hosts" {
       vlan      = 21
       ip_suffix = 9
     }
+    "apps" = {
+      mac_addr   = "66:9D:1A:6B:C7:5E"
+      vlan       = 21
+      ip_suffix  = 13
+      cf_proxied = false
+    }
+    "code" = {
+      mac_addr   = "BC:24:11:6D:35:89"
+      vlan       = 21
+      ip_suffix  = 28
+    }
     "netm" = {
       mac_addr  = "BA:DF:A0:82:9C:9A"
       vlan      = 21
@@ -448,7 +459,7 @@ variable "ipv4_firewall_filter_rules" {
     # { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "udp", dst_port = "1900" },             # SSDP
     # { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", src_address = "10.0.22.7", protocol = "udp", dst_port = "1990" },             # SSDP
     # { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot bambulab", in_interface = "vlan22-iot", protocol = "udp", dst_port = "2021" },             # SSDP
-    ## VLAN22 Global Rules 
+    ## VLAN22 Global Rules
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept dns", in_interface = "vlan22-iot", protocol = "udp", dst_port = "53" },
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept logs", in_interface = "vlan22-iot", protocol = "tcp", dst_port = "5514" },
     { disabled = false, chain = "forward", action = "accept", comment = "vlan22-iot accept logs", in_interface = "vlan22-iot", protocol = "udp", dst_port = "5514" },
@@ -618,10 +629,10 @@ variable "ipv6_firewall_filter_rules" {
     { disabled = false, chain = "forward", action = "accept", comment = "vlan23-iot accept udp", in_interface = "vlan23-iot2-lan-only", out_interface_list = "!LAN", protocol = "udp" },
     { disabled = false, chain = "forward", action = "drop", comment = "vlan23-iot drop all", in_interface = "vlan23-iot2-lan-only" },
 
-    # Default IPv6 allow 80/443 to vlan21 servers 
+    # Default IPv6 allow 80/443 to vlan21 servers
     { disabled = false, chain = "forward", action = "accept", comment = "WAN to VLAN21-servers accept http", out_interface = "vlan21-servers", protocol = "tcp", dst_port = "80" },
     { disabled = false, chain = "forward", action = "accept", comment = "WAN to VLAN21-servers accept https", out_interface = "vlan21-servers", protocol = "tcp", dst_port = "443" },
-    # SSH BASTION 
+    # SSH BASTION
     { disabled = false, chain = "forward", action = "accept", comment = "WAN to bastion accept ssh", out_interface = "vlan21-servers", protocol = "tcp", dst_port = "22", dst_address = "fd00:21::bcaf:7fff:fe80:718e/128" },
     { disabled = false, chain = "forward", action = "accept", comment = "WAN to bastion accept ssh", out_interface = "vlan21-servers", protocol = "tcp", dst_port = "22", dst_address = "2c0f:f2a0:2058:5:bcaf:7fff:fe80:718e/128" },
     # ORACLE VPS WIREGUARD VPN
@@ -671,54 +682,82 @@ variable "records_cname" {
     cf_enabled = optional(bool, true)
   }))
   default = {
-    "pdns"          = { host = "ns1" }
-    "pdns-admin"    = { host = "ns1" }
-    "adguardhome"   = { host = "netm" }
-    "unifi"         = { host = "netm" }
-    "bi"            = { host = "bastion" }
-    "semaphore"     = { host = "bastion" }
-    "comms"         = { host = "netm" }
-    "grafana"       = { host = "haa" }
-    "ha"            = { host = "bastion" }
-    "alarmserver"   = { host = "stax" }
-    "envisalink"    = { host = "bastion" }
-    "litellm"       = { host = "ai", cf_enabled = true }
-    "openwebui"     = { host = "ai" }
+    // ai host
     "librechat"      = { host = "ai" }
+    "litellm"       = { host = "ai", cf_enabled = true }
     "lobechat"      = { host = "ai" }
-    "huly"          = { host = "projects" }
-    "worklenz"      = { host = "projects" }
-    "mktxp-grafana" = { host = "stax" }
-    "mqtt-explorer" = { host = "haa" }
-    "netmon"        = { host = "netm" }
+    "openwebui"     = { host = "ai" }
+
+    // apps host
+    "cloud"         = { host = "apps" }
+    "freecad"       = { host = "apps" }
+    "office"        = { host = "apps" }
+    "orca"          = { host = "apps" }
+    "invoicerr"     = { host = "apps" }
+
+    // bastion host
+    "bi"            = { host = "bastion" }
+    "envisalink"    = { host = "bastion" }
+    "ha"            = { host = "bastion" }
     "router"        = { host = "bastion" }
+    "semaphore"     = { host = "bastion" }
     "switch"        = { host = "bastion" }
-    "tasmoadmin"    = { host = "haa" }
-    "tasmobackup"   = { host = "haa" }
     "traefik"       = { host = "bastion" }
-    "uptime-remote" = { host = "oracle" }
-    "uptime"        = { host = "netm" }
     "w"             = { host = "bastion" }
-    "zigbee2mqtt"   = { host = "haa" }
-    "spoolman"      = { host = "haa" }
-    "zha"           = { host = "stax" }
-    "sonarr"        = { host = "saltbox", cf_enabled = false }
-    "radarr"        = { host = "saltbox", cf_enabled = false }
-    "ombi"          = { host = "saltbox", cf_enabled = false }
-    "organizr"      = { host = "saltbox", cf_enabled = false }
-    "nzbget"        = { host = "saltbox", cf_enabled = false }
-    "rutorrent"     = { host = "saltbox", cf_enabled = false }
-    "portainer"     = { host = "saltbox", cf_enabled = false }
-    "jackett"       = { host = "saltbox", cf_enabled = false }
-    "nzbhydra2"     = { host = "saltbox", cf_enabled = false }
-    "plexpy"        = { host = "saltbox", cf_enabled = false }
-    "plex"          = { host = "saltbox", cf_enabled = false }
-    "jellyfin"      = { host = "saltbox", cf_enabled = false }
-    "lidarr"        = { host = "saltbox", cf_enabled = false }
-    "login"         = { host = "saltbox", cf_enabled = false }
-    "autoscan"      = { host = "saltbox", cf_enabled = false }
+
+    "forgejo"       = { host = "code" }
+
+    // haa host
     "emqx"          = { host = "haa" }
     "esphome"        = { host = "haa" }
+    "grafana"       = { host = "haa" }
+    "mqtt-explorer" = { host = "haa" }
+    "spoolman"      = { host = "haa" }
+    "tasmoadmin"    = { host = "haa" }
+    "tasmobackup"   = { host = "haa" }
+    "zigbee2mqtt"   = { host = "haa" }
+
+    // netm host
+    "adguardhome"   = { host = "netm" }
+    "comms"         = { host = "netm" }
+    "netmon"        = { host = "netm" }
+    "unifi"         = { host = "netm" }
+    "uptime"        = { host = "netm" }
+    "luna"          = { host = "netm" }
+
+    // ns1 host
+    "pdns"          = { host = "ns1" }
+    "pdns-admin"    = { host = "ns1" }
+
+    // oracle host
+    "uptime-remote" = { host = "oracle" }
+
+    // projects host
+    "huly"          = { host = "projects" }
+    "worklenz"      = { host = "projects" }
+    "worklenz-api"  = { host = "projects" }
+
+    // saltbox host
+    "autoscan"      = { host = "saltbox", cf_enabled = false }
+    "jackett"       = { host = "saltbox", cf_enabled = false }
+    "jellyfin"      = { host = "saltbox" }
+    "lidarr"        = { host = "saltbox", cf_enabled = false }
+    "login"         = { host = "saltbox", cf_enabled = false }
+    "nzbget"        = { host = "saltbox", cf_enabled = false }
+    "nzbhydra2"     = { host = "saltbox", cf_enabled = false }
+    "ombi"          = { host = "saltbox", cf_enabled = false }
+    "organizr"      = { host = "saltbox", cf_enabled = false }
+    "plex"          = { host = "saltbox", cf_enabled = false }
+    "plexpy"        = { host = "saltbox", cf_enabled = false }
+    "portainer"     = { host = "saltbox", cf_enabled = false }
+    "radarr"        = { host = "saltbox", cf_enabled = false }
+    "rutorrent"     = { host = "saltbox", cf_enabled = false }
+    "sonarr"        = { host = "saltbox", cf_enabled = false }
+
+    // stax host
+    "alarmserver"   = { host = "stax" }
+    "mktxp-grafana" = { host = "stax" }
+    "zha"           = { host = "stax" }
   }
 }
 
